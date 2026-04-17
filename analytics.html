@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EDAT — Analytics & Reports | ESG Data Intelligence</title>
+  <meta name="description" content="EDAT Analytics — vehicle distribution, emission correlations, speed analysis, and downloadable ESG reports for policy decision-making."/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/analytics.css"/>
+</head>
+<body>
+
+<nav class="nav" id="main-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">⚡</div>
+      <span>ED<span class="gradient-text">AT</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="analytics.html" class="active">Analytics</a></li>
+      <li><a href="transparency.html">Transparency</a></li>
+      <li><a href="tech.html">Tech &amp; API</a></li>
+      <li><a href="account.html">My Account</a></li>
+    </ul>
+    <div class="nav-cta">
+      <div class="nav-status"><span class="status-dot active"></span> System Live</div>
+      <div id="nav-auth-area"></div>
+      <button class="btn btn-primary" id="btn-esg-export" style="font-size:0.85rem;padding:8px 16px;">⬇ Export ESG Report</button>
+      <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+</nav>
+
+<div class="notif-panel" id="notif-panel"></div>
+
+<div class="page-body">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="container">
+      <div class="ph-inner">
+        <div>
+          <div class="breadcrumb">Dashboard → <span style="color:var(--text)">Analytics</span></div>
+          <h1 style="font-size:1.8rem;margin:8px 0;">Analytics &amp; <span class="gradient-text">Reports</span></h1>
+          <p style="font-size:0.9rem;">Data science &amp; policy intelligence — real-time ESG metrics and behavioural insights.</p>
+        </div>
+        <div class="ph-controls">
+          <div class="date-selector">
+            <button class="ds-btn active" data-range="today">Today</button>
+            <button class="ds-btn" data-range="7d">7 Days</button>
+            <button class="ds-btn" data-range="30d">30 Days</button>
+            <button class="ds-btn" data-range="custom">Custom</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" style="padding-top:32px;padding-bottom:64px;">
+
+    <!-- ── Summary KPI Row ── -->
+    <div class="kpi-ribbon" id="kpi-ribbon">
+      <div class="kr-item">
+        <div class="kr-icon">🚗</div>
+        <div class="kr-val green mono" data-counter="124832" data-decimals="0" data-duration="2000">0</div>
+        <div class="kr-label">Vehicles Today</div>
+      </div>
+      <div class="kr-item">
+        <div class="kr-icon">💰</div>
+        <div class="kr-val blue mono" id="rev-kpi">RM 1.84M</div>
+        <div class="kr-label">Revenue</div>
+      </div>
+      <div class="kr-item">
+        <div class="kr-icon">🌿</div>
+        <div class="kr-val" style="color:var(--amber)" data-counter="4.2" data-suffix="t CO₂" data-decimals="1" data-duration="2200">0</div>
+        <div class="kr-label">Emissions Saved</div>
+      </div>
+      <div class="kr-item">
+        <div class="kr-icon">⚡</div>
+        <div class="kr-val" style="color:var(--purple)" data-counter="34.2" data-suffix="%" data-decimals="1" data-duration="1800">0</div>
+        <div class="kr-label">EV Share</div>
+      </div>
+      <div class="kr-item">
+        <div class="kr-icon">🌳</div>
+        <div class="kr-val green mono" data-counter="12400" data-decimals="0" data-duration="2500">0</div>
+        <div class="kr-label">Tree Equiv.</div>
+      </div>
+      <div class="kr-item">
+        <div class="kr-icon">🤖</div>
+        <div class="kr-val blue mono" data-counter="97.4" data-suffix="%" data-decimals="1" data-duration="1600">0</div>
+        <div class="kr-label">Avg Confidence</div>
+      </div>
+    </div>
+
+    <!-- ── Row 1: Vehicle Distribution + Speed/Emission ── -->
+    <div class="analytics-row">
+      <div class="analytics-widget">
+        <div class="aw-header">
+          <div>
+            <h3>Vehicle Class Distribution</h3>
+            <p style="font-size:0.82rem;margin-top:4px;">EV vs ICE vs Motorcycles vs Trucks</p>
+          </div>
+          <div class="flex gap-8">
+            <button class="chart-toggle active" data-chart="donut">🍩 Donut</button>
+            <button class="chart-toggle" data-chart="bar">📊 Bar</button>
+          </div>
+        </div>
+        <div class="chart-wrap" style="position:relative;height:260px;">
+          <canvas id="chart-vehicle-donut"></canvas>
+          <canvas id="chart-vehicle-bar" style="display:none;"></canvas>
+        </div>
+        <div class="legend-list" id="vehicle-legend"></div>
+      </div>
+
+      <div class="analytics-widget">
+        <div class="aw-header">
+          <div>
+            <h3>Speed vs Emission Correlation</h3>
+            <p style="font-size:0.82rem;margin-top:4px;">Higher speed → increased emission index</p>
+          </div>
+          <span class="badge badge-amber">Scatter Analysis</span>
+        </div>
+        <div class="chart-wrap" style="height:300px;">
+          <canvas id="chart-scatter"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Row 2: Hourly Revenue + Carbon Trend ── -->
+    <div class="analytics-row" style="margin-top:24px;">
+      <div class="analytics-widget" style="flex:2;">
+        <div class="aw-header">
+          <div>
+            <h3>Hourly Revenue Breakdown</h3>
+            <p style="font-size:0.82rem;margin-top:4px;">Revenue segmented by vehicle class</p>
+          </div>
+          <span class="badge badge-green">Stacked Chart</span>
+        </div>
+        <div class="chart-wrap" style="height:260px;">
+          <canvas id="chart-revenue-stacked"></canvas>
+        </div>
+      </div>
+      <div class="analytics-widget" style="flex:1;">
+        <div class="aw-header">
+          <div>
+            <h3>Carbon Index Trend</h3>
+            <p style="font-size:0.82rem;margin-top:4px;">30-day rolling average</p>
+          </div>
+          <span class="badge badge-blue">vs Target</span>
+        </div>
+        <div class="chart-wrap" style="height:260px;">
+          <canvas id="chart-carbon-trend"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Row 3: Pricing Analysis + Confidence Distribution ── -->
+    <div class="analytics-row" style="margin-top:24px;">
+      <div class="analytics-widget">
+        <div class="aw-header">
+          <div>
+            <h3>Toll Price Distribution</h3>
+            <p style="font-size:0.82rem;margin-top:4px;">Price frequency histogram</p>
+          </div>
+        </div>
+        <div class="chart-wrap" style="height:220px;">
+          <canvas id="chart-price-hist"></canvas>
+        </div>
+      </div>
+      <div class="analytics-widget">
+        <div class="aw-header">
+          <div>
+            <h3>AI Confidence Distribution</h3>
+            <p style="font-size:0.82rem;margin-top:4px;">% of transactions by confidence band</p>
+          </div>
+          <span class="badge badge-green">85% threshold</span>
+        </div>
+        <div class="chart-wrap" style="height:220px;">
+          <canvas id="chart-confidence"></canvas>
+        </div>
+      </div>
+      <div class="analytics-widget">
+        <div class="aw-header">
+          <div>
+            <h3>EV Adoption Trend</h3>
+            <p style="font-size:0.82rem;margin-top:4px;">Monthly EV penetration rate</p>
+          </div>
+        </div>
+        <div class="chart-wrap" style="height:220px;">
+          <canvas id="chart-ev-trend"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ESG Impact Summary Table ── -->
+    <div class="analytics-widget" style="margin-top:24px;">
+      <div class="aw-header">
+        <div>
+          <h3>ESG Impact Summary by Corridor</h3>
+          <p style="font-size:0.82rem;margin-top:4px;">Policy intelligence view — per location breakdown</p>
+        </div>
+        <button class="btn btn-outline" id="btn-dl-table" style="font-size:0.82rem;padding:8px 14px;">↓ CSV Export</button>
+      </div>
+      <div class="table-wrap">
+        <table class="a-table">
+          <thead>
+            <tr>
+              <th>Corridor</th>
+              <th>Vehicles</th>
+              <th>Revenue (RM)</th>
+              <th>Avg Toll</th>
+              <th>EV%</th>
+              <th>CO₂ Saved (kg)</th>
+              <th>Tree Equiv.</th>
+              <th>Avg Confidence</th>
+              <th>ESG Score</th>
+            </tr>
+          </thead>
+          <tbody id="esg-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── ESG Export Banner ── -->
+    <div class="esg-export-banner card" style="margin-top:32px;border-color:rgba(0,255,136,0.3);background:linear-gradient(135deg,rgba(0,255,136,0.04),rgba(0,180,255,0.04));">
+      <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
+        <div style="font-size:3rem;">📋</div>
+        <div style="flex:1;">
+          <h3 style="margin-bottom:8px;">ESG Report — Q1 2026</h3>
+          <p style="font-size:0.9rem;">Comprehensive environmental, social, and governance metrics aligned with Malaysia's Net-Zero 2030 Pledge. Includes carbon offset calculations, vehicle behavioural analysis, and pricing fairness audit.</p>
+          <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+            <span class="badge badge-green">ISO 14064 Aligned</span>
+            <span class="badge badge-blue">PDPA Compliant</span>
+            <span class="badge badge-blue">GRI Standards</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;flex-shrink:0;">
+          <button class="btn btn-primary" id="btn-esg-pdf" style="justify-content:center;">📄 Download PDF</button>
+          <button class="btn btn-outline" id="btn-esg-xlsx" style="justify-content:center;">📊 Download Excel</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom" style="border-top:none;padding-top:0;">
+      <span>© 2026 EDAT — Eco-Dynamic AI Tolling</span>
+      <span style="color:var(--green)">Analytics Engine v2.4.1</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="js/main.js"></script>
+<script src="js/analytics.js"></script>
+<script src="js/ai-agent.js"></script>
+</body>
+</html>

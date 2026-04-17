@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EDAT — Eco-Dynamic AI Tolling | Redefining Tolling for a Net-Zero Future</title>
+  <meta name="description" content="EDAT dynamically adjusts toll prices based on real-time vehicle emissions, behaviour, and environmental impact — transparently and fairly." />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/index.css" />
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav class="nav" id="main-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">⚡</div>
+      <span>ED<span class="accent">AT</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="analytics.html">Analytics</a></li>
+      <li><a href="transparency.html">Transparency</a></li>
+      <li><a href="tech.html">Tech &amp; API</a></li>
+      <li><a href="account.html" id="nav-my-account">My Account</a></li>
+    </ul>
+    <div class="nav-cta">
+      <div class="nav-status">
+        <span class="status-dot active"></span>
+        System Live
+      </div>
+      <div id="nav-auth-area">
+        <a href="login.html" class="btn btn-outline-red" style="padding:9px 18px;font-size:0.85rem;">Sign In</a>
+      </div>
+      <div class="hamburger" id="hamburger">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Notification Panel -->
+<div class="notif-panel" id="notif-panel"></div>
+
+<!-- ═══════════════════════════════════════════
+     HERO
+═══════════════════════════════════════════ -->
+<section class="hero" id="hero">
+  <div class="container">
+    <div class="hero-inner">
+
+      <!-- Left: Text content -->
+      <div class="hero-text">
+        <div class="hero-eyebrow">
+          <span class="hero-eyebrow-dot"></span>
+          AI-Powered Smart Tolling Platform
+        </div>
+
+        <h1>
+          Redefining Tolling<br/>
+          for a <span class="accent">Net-Zero</span> Future
+        </h1>
+
+        <p class="lead">
+          EDAT dynamically prices tolls based on real-time carbon impact, vehicle emissions,
+          and driving behaviour — delivering fairer, greener infrastructure for Malaysia's highways.
+        </p>
+
+        <div class="hero-actions">
+          <a href="dashboard.html" class="btn btn-red" id="btn-dashboard">
+            📊 Live Dashboard
+          </a>
+          <a href="transparency.html" class="btn btn-outline-red" id="btn-check">
+            🔍 Check My Toll
+          </a>
+          <a href="tech.html" class="btn btn-ghost" id="btn-api">
+            API Docs →
+          </a>
+        </div>
+
+        <div class="hero-trust">
+          <div class="trust-item">
+            <span class="trust-icon">🏛️</span>
+            MoT Approved
+          </div>
+          <div class="trust-divider"></div>
+          <div class="trust-item">
+            <span class="trust-icon">🔒</span>
+            SHA-256 Privacy
+          </div>
+          <div class="trust-divider"></div>
+          <div class="trust-item">
+            <span class="trust-icon">🌿</span>
+            ISO 14064
+          </div>
+          <div class="trust-divider"></div>
+          <div class="trust-item">
+            <span class="trust-icon">⚡</span>
+            &lt;200ms Pricing
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: AI Monitor illustration -->
+      <div class="hero-visual">
+        <!-- Floating badges -->
+        <div class="hero-badge hb-1">
+          <span class="hb-icon">🌿</span>
+          <div>
+            <div style="font-size:0.7rem;color:var(--text-muted);">CO₂ Offset Today</div>
+            <div style="color:var(--green);font-family:var(--mono);font-weight:700;" id="hb-co2">8,430 kg</div>
+          </div>
+        </div>
+        <div class="hero-badge hb-2">
+          <span class="hb-icon">🤖</span>
+          <div>
+            <div style="font-size:0.7rem;color:var(--text-muted);">AI Confidence</div>
+            <div style="color:var(--navy);font-family:var(--mono);font-weight:700;" id="hb-conf">97.4%</div>
+          </div>
+        </div>
+
+        <div class="ai-monitor">
+          <!-- Top bar -->
+          <div class="am-topbar">
+            <span class="am-topbar-title">⚡ EDAT LIVE MONITOR — CAM-07A</span>
+            <span class="am-live">LIVE</span>
+          </div>
+
+          <!-- Road scene with bounding boxes -->
+          <div class="am-scene">
+            <div class="am-road"></div>
+            <div class="am-lane"></div>
+            <div class="am-lane am-lane-2"></div>
+            <div class="am-scanline"></div>
+
+            <!-- EV bounding box -->
+            <div class="am-bbox ev">
+              <div class="am-bbox-label">
+                <span class="lb-hash">SHA#A3F9</span>
+                <span class="lb-class">EV Sedan</span>
+                <span style="color:#6b7280;font-size:0.62rem;">98.2% conf</span>
+                <span class="lb-price" style="color:#00B894;">RM 1.20</span>
+              </div>
+            </div>
+
+            <!-- Diesel SUV bounding box -->
+            <div class="am-bbox suv">
+              <div class="am-bbox-label">
+                <span class="lb-hash">SHA#C72E</span>
+                <span class="lb-class">Diesel SUV</span>
+                <span style="color:#6b7280;font-size:0.62rem;">95.7% conf</span>
+                <span class="lb-price" style="color:#FF7043;">RM 4.80</span>
+              </div>
+            </div>
+
+            <!-- Motorcycle bounding box -->
+            <div class="am-bbox moto">
+              <div class="am-bbox-label">
+                <span class="lb-hash">SHA#B11D</span>
+                <span class="lb-class">Motorcycle</span>
+                <span style="color:#6b7280;font-size:0.62rem;">91.3% conf</span>
+                <span class="lb-price" style="color:#42A5F5;">RM 0.60</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Data rows -->
+          <div class="am-datarows">
+            <div class="am-row">
+              <div class="am-row-dot" style="background:#00B894;"></div>
+              <span class="am-row-hash">SHA#A3F9</span>
+              <span class="am-row-class">EV Sedan</span>
+              <span class="am-row-conf">98.2%</span>
+              <span class="am-row-toll" style="color:var(--green);">RM 1.20</span>
+            </div>
+            <div class="am-row">
+              <div class="am-row-dot" style="background:#FF7043;"></div>
+              <span class="am-row-hash">SHA#C72E</span>
+              <span class="am-row-class">Diesel SUV</span>
+              <span class="am-row-conf">95.7%</span>
+              <span class="am-row-toll" style="color:#FF7043;">RM 4.80</span>
+            </div>
+            <div class="am-row">
+              <div class="am-row-dot" style="background:#42A5F5;"></div>
+              <span class="am-row-hash">SHA#B11D</span>
+              <span class="am-row-class">Motorcycle</span>
+              <span class="am-row-conf">91.3%</span>
+              <span class="am-row-toll" style="color:#42A5F5;">RM 0.60</span>
+            </div>
+          </div>
+
+          <!-- Footer stats -->
+          <div class="am-footer">
+            <div class="am-stat">
+              <span class="am-stat-label">Confidence</span>
+              <span class="am-stat-val" style="color:var(--green);" id="am-conf">97.4%</span>
+            </div>
+            <div class="am-stat">
+              <span class="am-stat-label">Emission Idx</span>
+              <span class="am-stat-val" style="color:#F59E0B;" id="am-emi">0.42</span>
+            </div>
+            <div class="am-stat">
+              <span class="am-stat-label">Revenue/hr</span>
+              <span class="am-stat-val" style="color:var(--navy);" id="am-rev">RM 14.2K</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     LIVE COUNTERS STRIP (Navy)
+═══════════════════════════════════════════ -->
+<div class="counters-strip">
+  <div class="container">
+    <div class="counters-inner">
+      <div class="counter-item">
+        <span class="ci-value" id="cnt-revenue">RM <span class="ci-accent">1.84M</span></span>
+        <span class="ci-label">Total Revenue Today</span>
+        <span class="ci-delta">↑ 12.4% vs yesterday</span>
+      </div>
+      <div class="counter-item">
+        <span class="ci-value">
+          <span data-counter="124800" data-decimals="0" data-duration="2000">0</span>
+        </span>
+        <span class="ci-label">Vehicles Processed</span>
+        <span class="ci-delta">Across 12 lanes active</span>
+      </div>
+      <div class="counter-item">
+        <span class="ci-value">
+          <span data-counter="8430" data-suffix=" kg" data-decimals="0" data-duration="2400">0</span>
+        </span>
+        <span class="ci-label">CO₂ Offset Today</span>
+        <span class="ci-delta" style="color:var(--green);">≡ 421 trees sequestered</span>
+      </div>
+      <div class="counter-item">
+        <span class="ci-value">
+          <span data-counter="97.4" data-suffix="%" data-decimals="1" data-duration="1600">0%</span>
+        </span>
+        <span class="ci-label">Avg AI Confidence</span>
+        <span class="ci-delta">Above 85% threshold ✓</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PARTNER LOGOS
+═══════════════════════════════════════════ -->
+<div class="partners-strip">
+  <div class="container">
+    <div class="partners-inner">
+      <div class="partner-item"><span class="partner-icon">🏛️</span> Ministry of Transport</div>
+      <div class="partner-item"><span class="partner-icon">🛣️</span> PLUS Expressways</div>
+      <div class="partner-item"><span class="partner-icon">🚗</span> JPJ Malaysia</div>
+      <div class="partner-item"><span class="partner-icon">🌿</span> DOE Malaysia</div>
+      <div class="partner-item"><span class="partner-icon">🔬</span> MIMOS Berhad</div>
+      <div class="partner-item"><span class="partner-icon">🏙️</span> Prasarana</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     HOW IT WORKS (Sky bg)
+═══════════════════════════════════════════ -->
+<section class="section how-section" id="how-it-works">
+  <div class="container">
+    <div class="section-header center">
+      <span class="eyebrow">How It Works</span>
+      <h2>Three Steps to <span class="accent">Smart Tolling</span></h2>
+      <p>From camera frame to carbon-adjusted toll in under 200ms — powered by computer vision and AI.</p>
+    </div>
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="hs-num step-1">01</div>
+        <div class="hs-icon">📷</div>
+        <h3>Detect &amp; Identify</h3>
+        <p>Computer vision cameras capture every vehicle entering the toll zone. YOLO-based detection classifies vehicle type and estimates speed in real-time.</p>
+        <ul class="step-features">
+          <li>30fps multi-lane camera stream</li>
+          <li>Instant plate anonymisation</li>
+          <li>Multi-vehicle simultaneous tracking</li>
+        </ul>
+      </div>
+      <div class="how-step">
+        <div class="hs-num step-2">02</div>
+        <div class="hs-icon">🧠</div>
+        <h3>Analyse &amp; Estimate</h3>
+        <p>The AI engine estimates emission profiles based on vehicle class, engine type, behavioural patterns, and environmental context.</p>
+        <ul class="step-features">
+          <li>Carbon footprint scoring per vehicle</li>
+          <li>Behaviour &amp; speed profiling</li>
+          <li>85% confidence threshold check</li>
+        </ul>
+      </div>
+      <div class="how-step">
+        <div class="hs-num step-3">03</div>
+        <div class="hs-icon">💰</div>
+        <h3>Price &amp; Charge</h3>
+        <p>Dynamic toll price calculated using base rate, carbon multiplier, emission index, and fairness adjustments — applied within 200ms.</p>
+        <ul class="step-features">
+          <li>Carbon multiplier dynamic pricing</li>
+          <li>Survival vehicle exemptions</li>
+          <li>Full transparent audit trail</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     PRIVACY FIRST (White)
+═══════════════════════════════════════════ -->
+<section class="section section-white" id="privacy">
+  <div class="container">
+    <div class="privacy-split">
+      <!-- Left text -->
+      <div class="ps-text">
+        <span class="eyebrow">Privacy First</span>
+        <h2>Your Identity is <span class="accent">Never Exposed</span></h2>
+        <p style="margin-bottom:24px;">EDAT processes vehicle data without ever storing or transmitting a real licence plate. Every plate is transformed into a one-way SHA-256 cryptographic hash — anonymous, irreversible, and PDPA-compliant.</p>
+
+        <div class="privacy-steps">
+          <div class="pv-step">
+            <div class="pv-step-num">1</div>
+            <div>
+              <h4>Camera Captures Plate</h4>
+              <p>OCR reads "WXY 1234" from the licence plate region in real-time</p>
+            </div>
+          </div>
+          <div class="pv-step">
+            <div class="pv-step-num">2</div>
+            <div>
+              <h4>Hashed On Edge Device</h4>
+              <p>SHA-256 applied locally on the camera unit — raw plate never leaves the device</p>
+            </div>
+          </div>
+          <div class="pv-step">
+            <div class="pv-step-num">3</div>
+            <div>
+              <h4>Only Hash Transmitted</h4>
+              <p>A 64-char hex string is all we receive — <span class="mono" style="color:var(--green);font-size:0.8rem;">a3f9c2e1...</span> — mathematically irreversible</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:24px;display:flex;gap:10px;flex-wrap:wrap;">
+          <span class="badge badge-green">PDPA 2010 Compliant</span>
+          <span class="badge badge-navy">Zero-PII Storage</span>
+          <span class="badge badge-gray">SHA-256 Standard</span>
+        </div>
+      </div>
+
+      <!-- Right: Hash demo -->
+      <div>
+        <div class="hash-demo-card">
+          <div class="hdc-header">
+            <span class="hdc-title">🔒 Live Anonymisation Demo</span>
+            <span class="hdc-badge">Real SHA-256</span>
+          </div>
+          <div class="hdc-body">
+            <div class="hdc-row">
+              <div class="hdc-box">
+                <div class="hdc-box-label">Raw Plate</div>
+                <div class="hdc-plate" id="raw-plate">WXY 1234</div>
+              </div>
+              <div class="hdc-arrow">→</div>
+              <div class="hdc-box">
+                <div class="hdc-box-label">SHA-256 Hash</div>
+                <div class="hdc-hash" id="hashed-plate">Computing...</div>
+              </div>
+            </div>
+            <div class="hdc-meta">
+              <div class="hdc-m-item">
+                <span class="hdc-m-label">Speed</span>
+                <span class="hdc-m-val" style="color:var(--green);">&lt;1ms</span>
+              </div>
+              <div class="hdc-m-item">
+                <span class="hdc-m-label">Algorithm</span>
+                <span class="hdc-m-val" style="color:var(--navy);">SHA-256</span>
+              </div>
+              <div class="hdc-m-item">
+                <span class="hdc-m-label">Reversible</span>
+                <span class="hdc-m-val" style="color:var(--err);">Never</span>
+              </div>
+            </div>
+            <button class="btn btn-navy w-full" id="rehash-btn" style="margin-top:16px;width:100%;justify-content:center;border-radius:var(--radius);">
+              🔄 Try Another Plate
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     ESG IMPACT (Navy dark)
+═══════════════════════════════════════════ -->
+<section class="section esg-navy" id="esg">
+  <div class="container">
+    <div class="esg-grid">
+      <div class="esg-left">
+        <span class="eyebrow" style="color:rgba(255,255,255,0.5);font-size:0.75rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;display:block;margin-bottom:12px;">ESG Impact</span>
+        <h2>Measurable <span class="accent">Environmental Progress</span></h2>
+        <p>Every toll transaction contributes to Malaysia's carbon neutrality roadmap. Real numbers, real accountability.</p>
+
+        <div class="esg-stats">
+          <div class="esg-stat">
+            <span class="esg-stat-num" data-counter="12400" data-decimals="0" data-duration="2200">0</span>
+            <span class="esg-stat-label">Trees Equivalent</span>
+            <span class="esg-stat-delta">↑ CO₂ offset this quarter</span>
+          </div>
+          <div class="esg-stat">
+            <span class="esg-stat-num" data-counter="38" data-suffix="%" data-decimals="0" data-duration="1800">0%</span>
+            <span class="esg-stat-label">EV Usage Increase</span>
+            <span class="esg-stat-delta">↑ Year-over-year</span>
+          </div>
+          <div class="esg-stat">
+            <span class="esg-stat-num" data-counter="4.2" data-suffix="K t" data-decimals="1" data-duration="2000">0</span>
+            <span class="esg-stat-label">Tonnes CO₂ Saved</span>
+            <span class="esg-stat-delta">Via dynamic pricing</span>
+          </div>
+          <div class="esg-stat">
+            <span class="esg-stat-num" style="color:var(--red);">2030</span>
+            <span class="esg-stat-label">Net-Zero Target</span>
+            <span class="esg-stat-delta">Malaysia Climate Pledge</span>
+          </div>
+        </div>
+
+        <a href="analytics.html" class="btn btn-white" id="btn-esg-reports">
+          📊 View Full Reports →
+        </a>
+      </div>
+
+      <div class="esg-right">
+        <div class="esg-bar-item">
+          <div class="ebi-header">
+            <span class="ebi-label">KL Corridor</span>
+            <span class="ebi-val">72% offset</span>
+          </div>
+          <div class="ebi-progress"><div class="ebi-fill" style="width:72%"></div></div>
+        </div>
+        <div class="esg-bar-item">
+          <div class="ebi-header">
+            <span class="ebi-label">Penang Bridge</span>
+            <span class="ebi-val">58% offset</span>
+          </div>
+          <div class="ebi-progress"><div class="ebi-fill alt" style="width:58%"></div></div>
+        </div>
+        <div class="esg-bar-item">
+          <div class="ebi-header">
+            <span class="ebi-label">E1 North–South</span>
+            <span class="ebi-val">45% offset</span>
+          </div>
+          <div class="ebi-progress"><div class="ebi-fill" style="width:45%"></div></div>
+        </div>
+        <div class="esg-bar-item">
+          <div class="ebi-header">
+            <span class="ebi-label">Johor–Singapore</span>
+            <span class="ebi-val">31% offset</span>
+          </div>
+          <div class="ebi-progress"><div class="ebi-fill alt" style="width:31%"></div></div>
+        </div>
+
+        <!-- Vehicle distribution card -->
+        <div class="vd-cards" style="margin-top:28px;">
+          <div class="vd-card">
+            <div class="vd-card-icon" style="background:rgba(0,184,148,0.12);">⚡</div>
+            <div class="vd-card-info">
+              <div class="vd-card-name" style="color:var(--white);">Electric Vehicles</div>
+              <div class="progress" style="margin-top:6px;background:rgba(255,255,255,0.1);"><div class="progress-fill green" style="width:34%;"></div></div>
+            </div>
+            <div class="vd-card-pct" style="color:var(--green);">34%</div>
+          </div>
+          <div class="vd-card">
+            <div class="vd-card-icon" style="background:rgba(245,158,11,0.12);">🚗</div>
+            <div class="vd-card-info">
+              <div class="vd-card-name" style="color:var(--white);">Petrol Cars</div>
+              <div class="progress" style="margin-top:6px;background:rgba(255,255,255,0.1);"><div class="progress-fill" style="width:41%;background:var(--amber);"></div></div>
+            </div>
+            <div class="vd-card-pct" style="color:var(--amber);">41%</div>
+          </div>
+          <div class="vd-card">
+            <div class="vd-card-icon" style="background:rgba(214,48,49,0.12);">🚛</div>
+            <div class="vd-card-info">
+              <div class="vd-card-name" style="color:var(--white);">Diesel/Trucks</div>
+              <div class="progress" style="margin-top:6px;background:rgba(255,255,255,0.1);"><div class="progress-fill" style="width:25%;background:var(--red);"></div></div>
+            </div>
+            <div class="vd-card-pct" style="color:var(--red);">25%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     PRICING (Sky bg)
+═══════════════════════════════════════════ -->
+<section class="section pricing-section" id="pricing">
+  <div class="container">
+    <div class="section-header center">
+      <span class="eyebrow">Transparent Pricing</span>
+      <h2>Fair, <span class="accent">Carbon-Based</span> Toll Rates</h2>
+      <p>The toll price is computed from four transparent parameters — nothing hidden, everything auditable.</p>
+    </div>
+
+    <!-- Formula -->
+    <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:20px 28px;text-align:center;margin-bottom:40px;box-shadow:var(--shadow-sm);">
+      <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:10px;font-weight:700;">Dynamic Pricing Formula</div>
+      <div style="font-family:var(--mono);font-size:clamp(0.9rem,2vw,1.15rem);color:var(--navy);">
+        <span style="color:var(--red);font-weight:700;">Toll</span> =
+        BaseRate × (1 + EmissionIndex × <span style="color:var(--red);">CarbonMultiplier</span>) × SpeedFactor × FairnessAdj
+      </div>
+    </div>
+
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="pc-icon">⚡</div>
+        <div class="pc-name">Green / EV</div>
+        <div class="pc-price"><span class="pc-currency">RM</span>0.60<span style="font-size:1.1rem;font-weight:400;color:var(--text-muted);"> – 1.50</span></div>
+        <div class="pc-range">per toll transaction</div>
+        <div class="pc-mult green">Carbon Multiplier ×0.2</div>
+        <ul class="pc-features">
+          <li><span class="pf-icon">✓</span>Lowest emission category</li>
+          <li><span class="pf-icon">✓</span>EV Green incentive discount</li>
+          <li><span class="pf-icon">✓</span>Peak hour exemption eligible</li>
+        </ul>
+      </div>
+
+      <div class="pricing-card featured">
+        <div class="pc-badge">Most Common</div>
+        <div class="pc-icon">🚗</div>
+        <div class="pc-name">Standard / Petrol</div>
+        <div class="pc-price"><span class="pc-currency">RM</span>2.40<span style="font-size:1.1rem;font-weight:400;color:rgba(255,255,255,0.5);"> – 4.20</span></div>
+        <div class="pc-range" style="color:rgba(255,255,255,0.55);">per toll transaction</div>
+        <div class="pc-mult white">Carbon Multiplier ×0.8</div>
+        <ul class="pc-features">
+          <li><span class="pf-icon">✓</span>Standard emission baseline</li>
+          <li><span class="pf-icon">✓</span>Speed-adjusted pricing</li>
+          <li><span class="pf-icon">✓</span>Behaviour scoring applied</li>
+        </ul>
+      </div>
+
+      <div class="pricing-card">
+        <div class="pc-icon">🚛</div>
+        <div class="pc-name">Heavy / Diesel</div>
+        <div class="pc-price"><span class="pc-currency">RM</span>5.80<span style="font-size:1.1rem;font-weight:400;color:var(--text-muted);"> – 12.00</span></div>
+        <div class="pc-range">per toll transaction</div>
+        <div class="pc-mult red">Carbon Multiplier ×2.1</div>
+        <ul class="pc-features">
+          <li><span class="pf-icon">✓</span>High emission pricing factor</li>
+          <li><span class="pf-icon">✓</span>Congestion hour surcharge</li>
+          <li><span class="pf-icon">✓</span>Off-peak discounts available</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Exemption notice -->
+    <div class="exemption-card">
+      <div class="ec-icon">🛡️</div>
+      <div>
+        <div class="ec-title">Survival Vehicle Exemptions</div>
+        <p style="font-size:0.88rem;">Ambulances, fire trucks, and vehicles registered under hardship assistance programs are <strong>fully exempt</strong> from carbon surcharges. B40 motorcycles receive a 50% baseline reduction.</p>
+        <div class="ec-badges">
+          <span class="badge badge-green">🚑 Emergency — RM 0.00</span>
+          <span class="badge badge-green">🏍️ B40 Motorcycle — 50% off</span>
+          <span class="badge badge-navy">👨‍👧 Hardship Override</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     CTA (Red)
+═══════════════════════════════════════════ -->
+<section class="cta-red-section">
+  <div class="container">
+    <div class="cta-red-inner">
+      <div class="cr-text">
+        <h2>Ready to Explore<br/>the Platform?</h2>
+        <p>Access live traffic data, run ESG reports, or verify your toll hash — EDAT puts transparency first at every step.</p>
+      </div>
+      <div class="cr-actions">
+        <a href="dashboard.html" class="btn btn-white" id="cta-dashboard">📊 Live Dashboard</a>
+        <a href="transparency.html" class="btn btn-outline-white" id="cta-transparency">🔍 Check My Toll</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     FOOTER (Navy)
+═══════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="nav-logo" style="margin-bottom:4px;">
+          <div class="nav-logo-icon">⚡</div>
+          <span style="color:var(--white);font-size:1.15rem;">ED<span style="color:var(--red);">AT</span></span>
+        </div>
+        <p>Eco-Dynamic AI Tolling — transforming Malaysia's highways into carbon-sensitive smart infrastructure for a net-zero future.</p>
+        <div style="margin-top:20px;display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="badge badge-white">v2.4.1</span>
+          <span class="badge badge-green">🟢 All Systems Nominal</span>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Platform</h5>
+        <ul>
+          <li><a href="dashboard.html">Live Dashboard</a></li>
+          <li><a href="analytics.html">Analytics</a></li>
+          <li><a href="transparency.html">Transparency Portal</a></li>
+          <li><a href="tech.html">Tech &amp; API</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Resources</h5>
+        <ul>
+          <li><a href="tech.html#docs">API Documentation</a></li>
+          <li><a href="tech.html#privacy">Privacy Whitepaper</a></li>
+          <li><a href="tech.html#confidence">AI Confidence Model</a></li>
+          <li><a href="#">ESG Report (PDF)</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Compliance</h5>
+        <ul>
+          <li><a href="#">PDPA 2010</a></li>
+          <li><a href="#">ISO 14064</a></li>
+          <li><a href="#">MyCC Guidelines</a></li>
+          <li><a href="#">WCAG 2.1</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 EDAT — Eco-Dynamic AI Tolling. All rights reserved.</span>
+      <span>Built for Malaysia's Net-Zero 2030 Pledge</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script src="js/index.js"></script>
+<script src="js/ai-agent.js"></script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+/* ── login.css ── */
+
+.login-body { min-height: 100vh; }
+
+.login-layout {
+  display: flex; min-height: 100vh;
+}
+
+/* Left panel */
+.login-left {
+  flex: 0 0 45%; background: var(--navy);
+  display: flex; align-items: center; justify-content: center;
+  padding: 60px 56px; position: relative; overflow: hidden;
+}
+.login-left::before {
+  content: '';
+  position: absolute; bottom: -80px; right: -80px;
+  width: 320px; height: 320px; border-radius: 50%;
+  background: rgba(214,48,49,0.1);
+}
+.login-left::after {
+  content: '';
+  position: absolute; top: -60px; left: -60px;
+  width: 240px; height: 240px; border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+}
+.ll-inner { max-width: 420px; position: relative; z-index: 1; }
+
+.ll-eyebrow {
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--red); margin-bottom: 14px;
+  display: block;
+}
+
+.ll-features { display: flex; flex-direction: column; gap: 18px; margin-bottom: 40px; }
+.ll-feat {
+  display: flex; align-items: flex-start; gap: 14px;
+}
+.ll-feat-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; flex-shrink: 0;
+}
+.ll-feat-title { font-size: 0.9rem; font-weight: 700; color: var(--white); margin-bottom: 2px; }
+.ll-feat-sub   { font-size: 0.78rem; color: rgba(255,255,255,0.55); }
+
+.ll-stats {
+  display: flex; gap: 0;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-lg); padding: 4px;
+}
+.ll-stat {
+  flex: 1; text-align: center; padding: 16px 12px;
+  border-right: 1px solid rgba(255,255,255,0.08);
+}
+.ll-stat:last-child { border-right: none; }
+.lls-num   { display: block; font-family: var(--font-display); font-size: 1.35rem; font-weight: 900; color: var(--white); }
+.lls-label { display: block; font-size: 0.68rem; color: rgba(255,255,255,0.5); margin-top: 3px; }
+
+/* Right panel */
+.login-right {
+  flex: 1; background: var(--white);
+  display: flex; align-items: center; justify-content: center;
+  padding: 60px 48px; overflow-y: auto;
+}
+.lr-inner { width: 100%; max-width: 420px; }
+
+.lr-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.82rem; color: var(--text-muted); font-weight: 500;
+  margin-bottom: 36px; transition: color var(--transition);
+}
+.lr-back:hover { color: var(--red); }
+
+/* Tabs */
+.auth-tabs {
+  display: flex; gap: 0;
+  background: var(--gray-100); border-radius: var(--radius); padding: 5px;
+  margin-bottom: 32px;
+}
+.auth-tab {
+  flex: 1; padding: 10px 16px; border-radius: var(--radius-sm);
+  font-size: 0.88rem; font-weight: 600; color: var(--text-muted);
+  background: transparent; transition: all var(--transition);
+  font-family: var(--font);
+}
+.auth-tab.active {
+  background: var(--white); color: var(--navy);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+/* Form */
+
+.form-header { margin-bottom: 28px; }
+.form-header h1 { color: var(--navy); }
+.form-header p  { color: var(--text-muted); font-size: 0.92rem; }
+
+.form-group { margin-bottom: 18px; }
+
+.pw-wrap { position: relative; }
+.pw-toggle {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  background: transparent; font-size: 1rem; color: var(--text-muted); padding: 4px;
+  transition: color var(--transition);
+}
+.pw-toggle:hover { color: var(--navy); }
+
+.form-remember { margin-bottom: 20px; }
+
+/* Checkbox */
+.checkbox-wrap {
+  display: flex; align-items: center; gap: 10px;
+  cursor: pointer; font-size: 0.85rem; color: var(--text-muted);
+  user-select: none;
+}
+.checkbox-wrap input { display: none; }
+.checkmark {
+  width: 18px; height: 18px; border: 2px solid var(--gray-300);
+  border-radius: 4px; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all var(--transition); background: var(--white);
+}
+.checkbox-wrap input:checked + .checkmark {
+  background: var(--red); border-color: var(--red);
+}
+.checkbox-wrap input:checked + .checkmark::after {
+  content: '✓'; color: var(--white); font-size: 0.7rem; font-weight: 800;
+}
+
+/* Error */
+.form-error {
+  background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25);
+  border-radius: var(--radius-sm); padding: 10px 14px;
+  font-size: 0.82rem; color: var(--err); margin-bottom: 12px;
+}
+
+/* Divider */
+.form-divider {
+  display: flex; align-items: center; gap: 14px;
+  margin: 24px 0; color: var(--text-muted); font-size: 0.8rem;
+}
+.form-divider::before, .form-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--gray-200);
+}
+
+/* Social buttons */
+.social-btns { display: flex; gap: 12px; }
+.social-btn {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 11px 14px; border: 1.5px solid var(--gray-200); border-radius: var(--radius);
+  font-size: 0.85rem; font-weight: 600; color: var(--text-muted);
+  background: var(--white); transition: all var(--transition); font-family: var(--font);
+}
+.social-btn:hover { border-color: var(--navy); color: var(--navy); background: var(--sky); }
+
+/* Password strength */
+.pw-strength { display: flex; align-items: center; gap: 10px; }
+.pws-bar  { flex: 1; height: 4px; background: var(--gray-200); border-radius: 2px; overflow: hidden; }
+.pws-fill { height: 100%; border-radius: 2px; transition: width 0.4s ease, background 0.4s ease; width: 0%; }
+.pws-label { font-size: 0.72rem; font-weight: 700; min-width: 50px; text-align: right; }
+
+/* Link button */
+.link-btn {
+  background: transparent; color: var(--red); font-weight: 700;
+  font-size: inherit; font-family: inherit; text-decoration: underline;
+  cursor: pointer;
+}
+
+.w-full { width: 100%; }
+
+@media (max-width: 900px) {
+  .login-left { display: none; }
+  .login-right { padding: 40px 28px; }
+}

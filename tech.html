@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EDAT — Tech & API | Developer Documentation</title>
+  <meta name="description" content="EDAT technical documentation — REST API reference, SHA-256 privacy whitepaper, AI confidence system, and smart city integration guides."/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/tech.css"/>
+</head>
+<body>
+
+<nav class="nav" id="main-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">⚡</div>
+      <span>ED<span class="gradient-text">AT</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="analytics.html">Analytics</a></li>
+      <li><a href="transparency.html">Transparency</a></li>
+      <li><a href="tech.html" class="active">Tech &amp; API</a></li>
+      <li><a href="account.html">My Account</a></li>
+    </ul>
+    <div class="nav-cta">
+      <div class="nav-status"><span class="status-dot active"></span> API v2</div>
+      <div id="nav-auth-area"></div>
+      <button class="btn btn-primary" id="btn-get-key" style="font-size:0.85rem;padding:8px 16px;">Get API Key</button>
+      <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+</nav>
+
+<div class="notif-panel" id="notif-panel"></div>
+
+<div class="tech-layout">
+  <!-- Sidebar TOC -->
+  <aside class="tech-sidebar">
+    <div class="ts-sticky">
+      <div class="ts-label">On This Page</div>
+      <nav class="toc-nav">
+        <a href="#overview"    class="toc-item active">Overview</a>
+        <a href="#docs"        class="toc-item">API Reference</a>
+        <a href="#privacy"     class="toc-item">Privacy Whitepaper</a>
+        <a href="#confidence"  class="toc-item">AI Confidence Model</a>
+        <a href="#integration" class="toc-item">Smart City Integration</a>
+        <a href="#rate-limits" class="toc-item">Rate Limits</a>
+        <a href="#changelog"   class="toc-item">Changelog</a>
+      </nav>
+
+      <div style="margin-top:32px;">
+        <div class="ts-label">API Status</div>
+        <div class="api-status-list">
+          <div class="api-status-item">
+            <span class="status-dot active"></span>
+            <span>REST API</span>
+            <span style="margin-left:auto;font-size:0.75rem;color:var(--green);font-family:var(--mono);">99.9%</span>
+          </div>
+          <div class="api-status-item">
+            <span class="status-dot active"></span>
+            <span>WebSocket Feed</span>
+            <span style="margin-left:auto;font-size:0.75rem;color:var(--green);font-family:var(--mono);">99.7%</span>
+          </div>
+          <div class="api-status-item">
+            <span class="status-dot active"></span>
+            <span>Hash Lookup</span>
+            <span style="margin-left:auto;font-size:0.75rem;color:var(--green);font-family:var(--mono);">100%</span>
+          </div>
+          <div class="api-status-item">
+            <span class="status-dot active"></span>
+            <span>ESG Export</span>
+            <span style="margin-left:auto;font-size:0.75rem;color:var(--green);font-family:var(--mono);">99.5%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="tech-main">
+    <div class="tech-page">
+
+      <!-- ── Overview ── -->
+      <section id="overview">
+        <div class="tp-badge">
+          <span class="badge badge-blue">API v2.4.1</span>
+          <span class="badge badge-green">Production Ready</span>
+          <span class="badge" style="background:rgba(124,58,237,0.12);color:#a78bfa;border:1px solid rgba(124,58,237,0.25)">RESTful + WebSocket</span>
+        </div>
+        <h1 style="font-size:2.2rem;margin:16px 0;">EDAT <span class="gradient-text">Developer API</span></h1>
+        <p style="font-size:1rem;max-width:680px;line-height:1.7;">Integrate real-time toll data, emission indices, and carbon pricing into your smart city applications. Our privacy-first API ensures zero PII leakage — all vehicle references use SHA-256 anonymous hashes.</p>
+
+        <div class="quickstart card" style="margin-top:28px;">
+          <div class="qs-header">
+            <h3>Quick Start</h3>
+            <div class="copy-btn" data-copy="curl" id="copy-quickstart">⧉ Copy</div>
+          </div>
+          <pre class="code-block" id="code-quickstart"><span class="c-comment"># Get a live toll transaction feed</span>
+<span class="c-method">curl</span> -X GET https://api.edat.gov.my/v2/transactions \
+  -H <span class="c-string">"Authorization: Bearer YOUR_API_KEY"</span> \
+  -H <span class="c-string">"Content-Type: application/json"</span> \
+  --data '<span class="c-string">{"limit": 100, "corridor": "E1-N", "include_emission": true}'</span></pre>
+        </div>
+
+        <!-- Base URL -->
+        <div class="info-row" style="margin-top:20px;">
+          <div class="ir-item card">
+            <div class="ir-label">Base URL</div>
+            <div class="ir-val mono" style="color:var(--blue)">https://api.edat.gov.my/v2</div>
+          </div>
+          <div class="ir-item card">
+            <div class="ir-label">Authentication</div>
+            <div class="ir-val mono" style="color:var(--green)">Bearer Token (JWT)</div>
+          </div>
+          <div class="ir-item card">
+            <div class="ir-label">Rate Limit</div>
+            <div class="ir-val mono" style="color:var(--amber)">1,000 req/min</div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="sep"/>
+
+      <!-- ── API Reference ── -->
+      <section id="docs">
+        <h2 style="margin-bottom:8px;">API Reference</h2>
+        <p style="margin-bottom:28px;">All endpoints return JSON. Timestamps are ISO 8601 in UTC+8.</p>
+
+        <!-- Endpoint cards -->
+        <div class="endpoint-list">
+
+          <!-- GET /transactions -->
+          <div class="endpoint-card card">
+            <div class="ep-header">
+              <span class="ep-method get">GET</span>
+              <span class="ep-path mono">/transactions</span>
+              <span class="ep-desc">Live transaction stream</span>
+            </div>
+            <div class="ep-body">
+              <div class="ep-params">
+                <div class="ep-p-header">Query Parameters</div>
+                <div class="param-table">
+                  <div class="pt-row"><span class="pt-name">limit</span><span class="pt-type">integer</span><span class="pt-desc">Records to return (max 500)</span></div>
+                  <div class="pt-row"><span class="pt-name">corridor</span><span class="pt-type">string</span><span class="pt-desc">Filter by corridor ID (e.g. "E1-N")</span></div>
+                  <div class="pt-row"><span class="pt-name">since</span><span class="pt-type">ISO 8601</span><span class="pt-desc">Return records after timestamp</span></div>
+                  <div class="pt-row"><span class="pt-name">vehicle_class</span><span class="pt-type">string</span><span class="pt-desc">EV | ICE | MOTORCYCLE | TRUCK</span></div>
+                </div>
+              </div>
+              <div class="ep-example">
+                <div class="ep-p-header">Response Example</div>
+                <pre class="code-block code-sm"><span class="c-key">{</span>
+  <span class="c-prop">"status"</span>: <span class="c-string">"success"</span>,
+  <span class="c-prop">"count"</span>: 100,
+  <span class="c-prop">"data"</span>: [
+    {
+      <span class="c-prop">"hash_id"</span>:        <span class="c-string">"sha256:a3f9c2e1..."</span>,
+      <span class="c-prop">"vehicle_class"</span>:  <span class="c-string">"EV"</span>,
+      <span class="c-prop">"confidence"</span>:     <span class="c-num">0.982</span>,
+      <span class="c-prop">"emission_index"</span>: <span class="c-num">0.087</span>,
+      <span class="c-prop">"speed_factor"</span>:   <span class="c-num">1.12</span>,
+      <span class="c-prop">"toll_rm"</span>:        <span class="c-num">1.24</span>,
+      <span class="c-prop">"corridor"</span>:       <span class="c-string">"E1-N"</span>,
+      <span class="c-prop">"timestamp"</span>:      <span class="c-string">"2026-04-17T09:13:57+08:00"</span>,
+      <span class="c-prop">"fallback_applied"</span>:<span class="c-bool">false</span>
+    }
+  ]
+<span class="c-key">}</span></pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- GET /emission/index -->
+          <div class="endpoint-card card">
+            <div class="ep-header">
+              <span class="ep-method get">GET</span>
+              <span class="ep-path mono">/emission/index</span>
+              <span class="ep-desc">Real-time emission index by zone</span>
+            </div>
+            <div class="ep-body">
+              <div class="ep-example">
+                <pre class="code-block code-sm"><span class="c-key">{</span>
+  <span class="c-prop">"zone"</span>:         <span class="c-string">"KL-SEREMBAN-KM12"</span>,
+  <span class="c-prop">"emission_idx"</span>: <span class="c-num">0.42</span>,
+  <span class="c-prop">"tier"</span>:         <span class="c-string">"STANDARD"</span>,
+  <span class="c-prop">"hotspot"</span>:      <span class="c-bool">false</span>,
+  <span class="c-prop">"updated_at"</span>:   <span class="c-string">"2026-04-17T09:13:57+08:00"</span>
+<span class="c-key">}</span></pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- POST /hash/lookup -->
+          <div class="endpoint-card card">
+            <div class="ep-header">
+              <span class="ep-method post">POST</span>
+              <span class="ep-path mono">/hash/lookup</span>
+              <span class="ep-desc">Look up toll record by SHA-256 hash</span>
+            </div>
+            <div class="ep-body">
+              <div class="ep-params">
+                <div class="ep-p-header">Request Body</div>
+                <pre class="code-block code-sm"><span class="c-key">{</span>
+  <span class="c-prop">"hash"</span>: <span class="c-string">"a3f9c2e1b4d7820fe19..."</span>  <span class="c-comment">// SHA-256 of plate (client-hashed)</span>
+<span class="c-key">}</span></pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- GET /esg/report -->
+          <div class="endpoint-card card">
+            <div class="ep-header">
+              <span class="ep-method get">GET</span>
+              <span class="ep-path mono">/esg/report</span>
+              <span class="ep-desc">Download ESG metrics report</span>
+            </div>
+            <div class="ep-body">
+              <div class="ep-params">
+                <div class="ep-p-header">Query Parameters</div>
+                <div class="param-table">
+                  <div class="pt-row"><span class="pt-name">period</span><span class="pt-type">string</span><span class="pt-desc">daily | weekly | monthly | quarterly</span></div>
+                  <div class="pt-row"><span class="pt-name">format</span><span class="pt-type">string</span><span class="pt-desc">json | csv | pdf</span></div>
+                  <div class="pt-row"><span class="pt-name">corridor</span><span class="pt-type">string</span><span class="pt-desc">Optional: filter by corridor</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- WebSocket -->
+          <div class="endpoint-card card" style="border-color:rgba(124,58,237,0.3);">
+            <div class="ep-header">
+              <span class="ep-method ws">WS</span>
+              <span class="ep-path mono">wss://stream.edat.gov.my/v2/live</span>
+              <span class="ep-desc">Real-time transaction WebSocket</span>
+            </div>
+            <div class="ep-body">
+              <div class="ep-example">
+                <div class="ep-p-header">Subscribe Message</div>
+                <pre class="code-block code-sm"><span class="c-comment">// Connect: wss://stream.edat.gov.my/v2/live?token=YOUR_API_KEY</span>
+<span class="c-comment">// Subscribe to a corridor:</span>
+{
+  <span class="c-prop">"action"</span>: <span class="c-string">"subscribe"</span>,
+  <span class="c-prop">"corridors"</span>: [<span class="c-string">"E1-N"</span>, <span class="c-string">"E1-S"</span>, <span class="c-string">"PENANG"</span>]
+}</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="sep"/>
+
+      <!-- ── Privacy Whitepaper ── -->
+      <section id="privacy">
+        <h2 style="margin-bottom:8px;">Privacy Whitepaper</h2>
+        <p style="margin-bottom:28px;">Technical explanation of how EDAT achieves zero-PII data processing.</p>
+
+        <div class="wp-section card">
+          <h3 style="color:var(--green);margin-bottom:16px;">SHA-256 Anonymisation Pipeline</h3>
+          <div class="wp-flow">
+            <div class="wp-step">
+              <div class="wp-step-num">1</div>
+              <div class="wp-step-content">
+                <h4>Camera Capture</h4>
+                <p>OpenCV frame captured at 30fps. License plate region extracted via YOLO detection with ≥85% confidence threshold.</p>
+              </div>
+            </div>
+            <div class="wp-arrow">→</div>
+            <div class="wp-step">
+              <div class="wp-step-num">2</div>
+              <div class="wp-step-content">
+                <h4>Edge Hashing</h4>
+                <p>The OCR-read plate string is hashed <em>on the edge device itself</em> before any network transmission. Raw plate never leaves the camera unit.</p>
+                <pre class="code-block code-sm" style="margin-top:8px;"><span class="c-comment"># Python — runs on-device</span>
+<span class="c-method">import</span> hashlib
+hash_id = hashlib.sha256(<span class="c-string">b"WXY1234"</span>).hexdigest()</pre>
+              </div>
+            </div>
+            <div class="wp-arrow">→</div>
+            <div class="wp-step">
+              <div class="wp-step-num">3</div>
+              <div class="wp-step-content">
+                <h4>Hash Transmitted</h4>
+                <p>Only <span class="mono" style="color:var(--green)">sha256("WXY1234") = "a3f9c2..."</span> is sent to EDAT servers. No plate, no identity.</p>
+              </div>
+            </div>
+            <div class="wp-arrow">→</div>
+            <div class="wp-step">
+              <div class="wp-step-num">4</div>
+              <div class="wp-step-content">
+                <h4>Irrecoverability</h4>
+                <p>SHA-256 is a one-way function. Even EDAT operators cannot reverse the hash to find the original plate. Mathematically guaranteed.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="gap:20px;margin-top:20px;">
+          <div class="card">
+            <h4 style="margin-bottom:12px;color:var(--blue)">What We Store</h4>
+            <ul class="wp-list" style="list-style:none;">
+              <li><span class="wpl-icon yes">✓</span> SHA-256 hash (64 hex chars)</li>
+              <li><span class="wpl-icon yes">✓</span> Vehicle class (EV/ICE/etc.)</li>
+              <li><span class="wpl-icon yes">✓</span> Emission index float</li>
+              <li><span class="wpl-icon yes">✓</span> Toll amount &amp; timestamp</li>
+              <li><span class="wpl-icon yes">✓</span> Corridor &amp; lane ID</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4 style="margin-bottom:12px;color:var(--red)">What We Never Store</h4>
+            <ul class="wp-list" style="list-style:none;">
+              <li><span class="wpl-icon no">✗</span> Licence plate number</li>
+              <li><span class="wpl-icon no">✗</span> Owner name or MyKAD</li>
+              <li><span class="wpl-icon no">✗</span> GPS location data</li>
+              <li><span class="wpl-icon no">✗</span> Camera footage (discarded)</li>
+              <li><span class="wpl-icon no">✗</span> Journey patterns or routes</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <hr class="sep"/>
+
+      <!-- ── AI Confidence System ── -->
+      <section id="confidence">
+        <h2 style="margin-bottom:8px;">AI Confidence Model</h2>
+        <p style="margin-bottom:28px;">EDAT uses a two-stage confidence scoring system — one for vehicle detection, one for emission estimation.</p>
+
+        <div class="conf-diagram card">
+          <div class="cd-flow">
+            <div class="cd-node" style="border-color:var(--blue);">
+              <div class="cdn-icon">📷</div>
+              <div class="cdn-label">Camera Frame</div>
+              <div class="cdn-sub">30fps, 4K</div>
+            </div>
+            <div class="cd-arrow">→</div>
+            <div class="cd-node" style="border-color:var(--green);">
+              <div class="cdn-icon">🎯</div>
+              <div class="cdn-label">YOLO Detection</div>
+              <div class="cdn-conf" style="color:var(--green)">Conf A</div>
+            </div>
+            <div class="cd-arrow">→</div>
+            <div class="cd-decision" id="cd-threshold">
+              <div class="cdd-label">Threshold Check</div>
+              <div class="cdd-val">≥ 85%?</div>
+            </div>
+            <div class="cd-branch">
+              <div class="cd-yes">
+                <div class="cd-arrow-down">↓ YES</div>
+                <div class="cd-node" style="border-color:var(--green);">
+                  <div class="cdn-icon">🧠</div>
+                  <div class="cdn-label">AI Pricing</div>
+                  <div class="cdn-sub">Standard</div>
+                </div>
+              </div>
+              <div class="cd-no">
+                <div class="cd-arrow-down" style="color:var(--amber);">↓ NO</div>
+                <div class="cd-node" style="border-color:var(--amber);">
+                  <div class="cdn-icon">⚠️</div>
+                  <div class="cdn-label">Fallback</div>
+                  <div class="cdn-sub">Conservative</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Confidence tiers table -->
+        <div class="card" style="margin-top:20px;padding:20px;">
+          <h4 style="margin-bottom:16px;">Confidence Band Actions</h4>
+          <table class="c-table">
+            <thead>
+              <tr>
+                <th>Confidence Band</th>
+                <th>Action</th>
+                <th>Pricing Mode</th>
+                <th>Audit Flag</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span style="color:var(--green)">95% – 100%</span></td>
+                <td>Standard Processing</td>
+                <td><span class="badge badge-green">Dynamic AI Price</span></td>
+                <td>None</td>
+              </tr>
+              <tr>
+                <td><span style="color:var(--blue)">85% – 95%</span></td>
+                <td>Standard Processing</td>
+                <td><span class="badge badge-blue">Dynamic AI Price</span></td>
+                <td>Logged</td>
+              </tr>
+              <tr>
+                <td><span style="color:var(--amber)">70% – 85%</span></td>
+                <td>Fallback Applied</td>
+                <td><span class="badge badge-amber">Base Rate Only</span></td>
+                <td>⚠️ Flagged</td>
+              </tr>
+              <tr>
+                <td><span style="color:var(--red)">&lt; 70%</span></td>
+                <td>Manual Review Queue</td>
+                <td><span class="badge badge-red">Held</span></td>
+                <td>🚨 Alert</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <hr class="sep"/>
+
+      <!-- ── Smart City Integration ── -->
+      <section id="integration">
+        <h2 style="margin-bottom:8px;">Smart City Integration</h2>
+        <p style="margin-bottom:28px;">EDAT is designed to plug into existing smart city ecosystems via open APIs and event streams.</p>
+
+        <div class="grid-3" style="gap:20px;">
+          <div class="int-card card">
+            <div class="ic-icon">🏙️</div>
+            <h3>Traffic Management</h3>
+            <p>Connect EDAT emission data to city traffic signal AI for adaptive routing based on pollution levels.</p>
+            <div class="badge badge-blue" style="margin-top:12px;">REST API</div>
+          </div>
+          <div class="int-card card">
+            <div class="ic-icon">📱</div>
+            <h3>Mobile Apps</h3>
+            <p>Integrate toll lookup into navigation apps and e-wallet platforms using our lightweight JSON API.</p>
+            <div class="badge badge-green" style="margin-top:12px;">SDK Available</div>
+          </div>
+          <div class="int-card card">
+            <div class="ic-icon">📊</div>
+            <h3>Government Analytics</h3>
+            <p>Export ESG compliance data to government dashboards in CSV, JSON, or our standardised PDF report format.</p>
+            <div class="badge badge-amber" style="margin-top:12px;">ISO 14064</div>
+          </div>
+          <div class="int-card card">
+            <div class="ic-icon">⚡</div>
+            <h3>EV Charging Networks</h3>
+            <p>Cross-reference EV detection data with charging network APIs to route high-emission vehicles to charging points.</p>
+            <div class="badge badge-green" style="margin-top:12px;">WebSocket</div>
+          </div>
+          <div class="int-card card">
+            <div class="ic-icon">🌦️</div>
+            <h3>Weather Correlation</h3>
+            <p>Ingest weather API data to adjust emission indices — precipitation and temperature affect measured emission levels.</p>
+            <div class="badge badge-blue" style="margin-top:12px;">Data Ingestion</div>
+          </div>
+          <div class="int-card card">
+            <div class="ic-icon">🛰️</div>
+            <h3>Satellite ESG Validation</h3>
+            <p>Cross-validate modelled emissions with satellite pollution data (Copernicus) for audit accuracy.</p>
+            <div class="badge badge-amber" style="margin-top:12px;">Planned Q3 2026</div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="sep"/>
+
+      <!-- ── Rate Limits ── -->
+      <section id="rate-limits">
+        <h2 style="margin-bottom:8px;">Rate Limits</h2>
+        <div class="grid-3" style="gap:16px;margin-top:20px;">
+          <div class="rl-card card text-center">
+            <div class="rl-tier">Free Tier</div>
+            <div class="rl-rate mono" style="color:var(--text-muted)">100 req/min</div>
+            <div class="rl-note">Public use</div>
+          </div>
+          <div class="rl-card card text-center" style="border-color:rgba(0,180,255,0.3);">
+            <div class="rl-tier" style="color:var(--blue)">Standard</div>
+            <div class="rl-rate mono" style="color:var(--blue)">1,000 req/min</div>
+            <div class="rl-note">Smart city apps</div>
+          </div>
+          <div class="rl-card card text-center" style="border-color:rgba(0,255,136,0.3);">
+            <div class="rl-tier" style="color:var(--green)">Enterprise</div>
+            <div class="rl-rate mono" style="color:var(--green)">Unlimited</div>
+            <div class="rl-note">Government / PLUS</div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="sep"/>
+
+      <!-- ── Changelog ── -->
+      <section id="changelog">
+        <h2 style="margin-bottom:8px;">Changelog</h2>
+        <div class="changelog">
+          <div class="cl-item">
+            <div class="cl-version badge badge-green">v2.4.1</div>
+            <div class="cl-date">2026-04-10</div>
+            <div class="cl-changes">
+              <div>✓ Added <span class="mono" style="color:var(--green)">/esg/report?format=pdf</span> endpoint</div>
+              <div>✓ WebSocket heartbeat improved — 99.7% uptime</div>
+              <div>✓ SHA-256 edge hashing latency reduced to &lt;0.5ms</div>
+            </div>
+          </div>
+          <div class="cl-item">
+            <div class="cl-version badge badge-blue">v2.3.0</div>
+            <div class="cl-date">2026-02-18</div>
+            <div class="cl-changes">
+              <div>✓ AI confidence model upgraded — 97.4% avg accuracy</div>
+              <div>✓ Added Penang Bridge corridor support</div>
+              <div>✓ New: <span class="mono" style="color:var(--blue)">/emission/hotspot</span> endpoint</div>
+            </div>
+          </div>
+          <div class="cl-item">
+            <div class="cl-version badge badge-amber">v2.0.0</div>
+            <div class="cl-date">2025-10-01</div>
+            <div class="cl-changes">
+              <div>✓ Full REST v2 API with JWT authentication</div>
+              <div>✓ Introduced dynamic pricing formula endpoint</div>
+              <div>⚠️ Breaking: v1 API deprecated</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom" style="border-top:none;padding-top:0;">
+      <span>© 2026 EDAT — Eco-Dynamic AI Tolling</span>
+      <span style="color:var(--blue)">API v2.4.1 · Swagger available at /docs</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script src="js/tech.js"></script>
+<script src="js/ai-agent.js"></script>
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EDAT — Login | My Account</title>
+  <meta name="description" content="Sign in to your EDAT account to view your toll history, route patterns, and personalised AI suggestions."/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/login.css"/>
+</head>
+<body class="login-body">
+
+<div class="login-layout">
+
+  <!-- ── Left Panel (Navy Info) ── -->
+  <div class="login-left">
+    <div class="ll-inner">
+      <!-- Logo -->
+      <a href="index.html" class="nav-logo" style="margin-bottom:48px;display:inline-flex;">
+        <div class="nav-logo-icon">⚡</div>
+        <span style="color:var(--white);font-size:1.3rem;">ED<span style="color:var(--red);">AT</span></span>
+      </a>
+
+      <div class="ll-eyebrow">Your Smart Toll Account</div>
+      <h2 style="color:var(--white);font-size:2rem;margin-bottom:18px;line-height:1.2;">
+        Track Your Routes.<br/>
+        Reduce Your <span style="color:var(--red);">Carbon.</span>
+      </h2>
+      <p style="color:rgba(255,255,255,0.65);font-size:0.95rem;line-height:1.75;margin-bottom:40px;">
+        Log in to see your personalised toll history, AI-detected commute patterns, 
+        and smart suggestions to lower your emissions and save money.
+      </p>
+
+      <!-- Feature list -->
+      <div class="ll-features">
+        <div class="ll-feat">
+          <div class="ll-feat-icon">📊</div>
+          <div>
+            <div class="ll-feat-title">Complete Journey History</div>
+            <div class="ll-feat-sub">Every toll, every route — privately linked to your hash</div>
+          </div>
+        </div>
+        <div class="ll-feat">
+          <div class="ll-feat-icon">🤖</div>
+          <div>
+            <div class="ll-feat-title">AI Routine Detection</div>
+            <div class="ll-feat-sub">Automated pattern recognition for your daily commute</div>
+          </div>
+        </div>
+        <div class="ll-feat">
+          <div class="ll-feat-icon">💡</div>
+          <div>
+            <div class="ll-feat-title">Personalised Suggestions</div>
+            <div class="ll-feat-sub">Switch to EV, adjust timing, save up to 40% on tolls</div>
+          </div>
+        </div>
+        <div class="ll-feat">
+          <div class="ll-feat-icon">🔒</div>
+          <div>
+            <div class="ll-feat-title">100% Privacy Protected</div>
+            <div class="ll-feat-sub">Only your SHA-256 hash is ever used — never your plate</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="ll-stats">
+        <div class="ll-stat">
+          <span class="lls-num">124K+</span>
+          <span class="lls-label">Registered Users</span>
+        </div>
+        <div class="ll-stat">
+          <span class="lls-num">RM 2.4M</span>
+          <span class="lls-label">Savings Generated</span>
+        </div>
+        <div class="ll-stat">
+          <span class="lls-num">38%</span>
+          <span class="lls-label">EV Switch Rate</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Right Panel (White Form) ── -->
+  <div class="login-right">
+    <div class="lr-inner">
+      <!-- Back link -->
+      <a href="index.html" class="lr-back">← Back to EDAT</a>
+
+      <!-- Tab switcher -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" data-tab="login">Sign In</button>
+        <button class="auth-tab" id="tab-register" data-tab="register">Create Account</button>
+      </div>
+
+      <!-- ── LOGIN FORM ── -->
+      <div class="auth-form" id="form-login">
+        <div class="form-header">
+          <h1 style="font-size:1.8rem;">Welcome back 👋</h1>
+          <p style="margin-top:6px;">Sign in to your EDAT account</p>
+        </div>
+
+        <div class="form-group">
+          <label for="login-email">Email Address</label>
+          <input type="email" id="login-email" class="input" placeholder="you@example.com" autocomplete="email"/>
+        </div>
+        <div class="form-group">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <label for="login-pw" style="margin:0;">Password</label>
+            <a href="#" style="font-size:0.8rem;color:var(--red);">Forgot password?</a>
+          </div>
+          <div class="pw-wrap">
+            <input type="password" id="login-pw" class="input" placeholder="••••••••" autocomplete="current-password"/>
+            <button class="pw-toggle" id="pw-toggle-login" type="button">👁</button>
+          </div>
+        </div>
+
+        <div class="form-remember">
+          <label class="checkbox-wrap">
+            <input type="checkbox" id="remember-me" checked/>
+            <span class="checkmark"></span>
+            Remember me for 30 days
+          </label>
+        </div>
+
+        <div class="form-error" id="login-error" style="display:none;"></div>
+
+        <button class="btn btn-red w-full form-submit" id="btn-login" style="justify-content:center;margin-top:8px;">
+          Sign In →
+        </button>
+
+        <div class="form-divider"><span>or continue with</span></div>
+
+        <div class="social-btns">
+          <button class="social-btn" id="demo-login">
+            <span>🎯</span> Demo Account
+          </button>
+          <button class="social-btn" id="gov-login">
+            <span>🏛️</span> MyDigital ID
+          </button>
+        </div>
+
+        <p style="text-align:center;margin-top:24px;font-size:0.85rem;">
+          Don't have an account?
+          <button class="link-btn" data-switch="register">Create one free →</button>
+        </p>
+      </div>
+
+      <!-- ── REGISTER FORM ── -->
+      <div class="auth-form" id="form-register" style="display:none;">
+        <div class="form-header">
+          <h1 style="font-size:1.8rem;">Create Account 🚀</h1>
+          <p style="margin-top:6px;">Join 124,000+ EDAT users</p>
+        </div>
+
+        <div class="grid-2" style="gap:14px;">
+          <div class="form-group">
+            <label for="reg-firstname">First Name</label>
+            <input type="text" id="reg-firstname" class="input" placeholder="Ahmad"/>
+          </div>
+          <div class="form-group">
+            <label for="reg-lastname">Last Name</label>
+            <input type="text" id="reg-lastname" class="input" placeholder="Faris"/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-email">Email Address</label>
+          <input type="email" id="reg-email" class="input" placeholder="you@example.com"/>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-plate">Vehicle Plate Number</label>
+          <div style="position:relative;">
+            <input type="text" id="reg-plate" class="input" placeholder="WXY 1234" style="padding-right:100px;font-family:var(--mono);text-transform:uppercase;"/>
+            <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:0.72rem;color:var(--text-muted);background:var(--gray-100);padding:3px 8px;border-radius:4px;">Hashed ✓</span>
+          </div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:6px;">🔒 Your plate is immediately hashed — never stored as plain text</div>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-vehicle">Primary Vehicle Type</label>
+          <select id="reg-vehicle" class="input" style="cursor:pointer;">
+            <option value="">Select vehicle type...</option>
+            <option value="EV">⚡ Electric Vehicle (EV)</option>
+            <option value="Hybrid">🔋 Hybrid</option>
+            <option value="Petrol">🚗 Petrol Car</option>
+            <option value="Diesel">🛻 Diesel SUV/MPV</option>
+            <option value="Motorcycle">🏍️ Motorcycle</option>
+            <option value="Truck">🚛 Truck / Commercial</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-pw">Password</label>
+          <div class="pw-wrap">
+            <input type="password" id="reg-pw" class="input" placeholder="Min. 8 characters"/>
+            <button class="pw-toggle" id="pw-toggle-reg" type="button">👁</button>
+          </div>
+          <div class="pw-strength" id="pw-strength" style="margin-top:8px;display:none;">
+            <div class="pws-bar"><div class="pws-fill" id="pws-fill"></div></div>
+            <span class="pws-label" id="pws-label">Weak</span>
+          </div>
+        </div>
+
+        <div class="form-checkbox" style="margin-bottom:16px;">
+          <label class="checkbox-wrap">
+            <input type="checkbox" id="terms-agree"/>
+            <span class="checkmark"></span>
+            I agree to the <a href="#" style="color:var(--red);">Terms of Service</a> and <a href="#" style="color:var(--red);">Privacy Policy</a>
+          </label>
+        </div>
+
+        <div class="form-error" id="reg-error" style="display:none;"></div>
+
+        <button class="btn btn-red w-full form-submit" id="btn-register" style="justify-content:center;">
+          Create My Account →
+        </button>
+
+        <p style="text-align:center;margin-top:24px;font-size:0.85rem;">
+          Already have an account?
+          <button class="link-btn" data-switch="login">Sign in →</button>
+        </p>
+      </div>
+
+    </div><!-- /lr-inner -->
+  </div><!-- /login-right -->
+
+</div><!-- /login-layout -->
+
+<script src="js/login.js"></script>
+</body>
+</html>

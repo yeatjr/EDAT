@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EDAT — My Account | Journey History & AI Insights</title>
+  <meta name="description" content="Your personal EDAT dashboard — toll history, AI-detected routes, carbon insights and personalised suggestions."/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/account.css"/>
+</head>
+<body class="account-body">
+
+<!-- ── Top Nav ── -->
+<nav class="nav" id="main-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">⚡</div>
+      <span>ED<span class="accent">AT</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="analytics.html">Analytics</a></li>
+      <li><a href="transparency.html">Transparency</a></li>
+      <li><a href="tech.html">Tech &amp; API</a></li>
+    </ul>
+    <div class="nav-cta">
+      <div class="nav-status"><span class="status-dot active"></span> System Live</div>
+      <div class="user-pill" id="user-pill">
+        <div class="user-avatar" id="user-avatar">A</div>
+        <span class="user-name" id="user-name-nav">My Account</span>
+        <span style="color:var(--gray-400);font-size:0.8rem;">▾</span>
+        <div class="user-dropdown" id="user-dropdown">
+          <div class="ud-header">
+            <div class="ud-name" id="ud-name">Ahmad Faris</div>
+            <div class="ud-email" id="ud-email">ahmad@example.com</div>
+          </div>
+          <div class="ud-items">
+            <a href="account.html" class="ud-item active">👤 My Account</a>
+            <a href="transparency.html" class="ud-item">🔍 Check My Toll</a>
+            <a href="#" class="ud-item">⚙️ Settings</a>
+            <div class="ud-divider"></div>
+            <button class="ud-item ud-logout" id="btn-logout">🚪 Sign Out</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Notification Panel -->
+<div class="notif-panel" id="notif-panel"></div>
+
+<!-- ── Page Layout ── -->
+<div class="account-layout">
+
+  <!-- Sidebar -->
+  <aside class="account-sidebar">
+    <!-- User card -->
+    <div class="as-user-card">
+      <div class="asuc-avatar" id="sidebar-avatar">A</div>
+      <div class="asuc-name" id="sidebar-name">Ahmad Faris</div>
+      <div class="asuc-email" id="sidebar-email">ahmad@example.com</div>
+      <div class="asuc-vehicle">
+        <span class="badge badge-navy" id="sidebar-vehicle">🚗 Petrol Car</span>
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="as-nav">
+      <a href="#" class="as-nav-item active" data-section="overview">
+        <span class="asni-icon">📊</span> Overview
+      </a>
+      <a href="#" class="as-nav-item" data-section="history">
+        <span class="asni-icon">📋</span> Journey History
+      </a>
+      <a href="#" class="as-nav-item" data-section="routes">
+        <span class="asni-icon">🗺️</span> Route Patterns
+      </a>
+      <a href="#" class="as-nav-item" data-section="suggestions">
+        <span class="asni-icon">💡</span> AI Suggestions
+        <span class="as-badge" id="suggestion-count">3</span>
+      </a>
+      <a href="#" class="as-nav-item" data-section="settings">
+        <span class="asni-icon">⚙️</span> Settings
+      </a>
+    </nav>
+
+    <!-- Quick stats -->
+    <div class="as-quick-stats">
+      <div class="asqs-title">This Month</div>
+      <div class="asqs-item">
+        <span class="asqs-label">Tolls Paid</span>
+        <span class="asqs-val" id="qs-total">RM 0</span>
+      </div>
+      <div class="asqs-item">
+        <span class="asqs-label">Journeys</span>
+        <span class="asqs-val" id="qs-journeys">0</span>
+      </div>
+      <div class="asqs-item">
+        <span class="asqs-label">CO₂ Generated</span>
+        <span class="asqs-val" style="color:var(--amber);" id="qs-co2">0 kg</span>
+      </div>
+      <div class="asqs-item">
+        <span class="asqs-label">Avg Confidence</span>
+        <span class="asqs-val" style="color:var(--green);" id="qs-conf">0%</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="account-main" id="account-main">
+
+    <!-- ═══════════════ OVERVIEW ═══════════════ -->
+    <section class="acc-section active" id="section-overview">
+      <div class="acc-header">
+        <div>
+          <h2>Welcome back, <span class="accent" id="welcome-name">Ahmad</span> 👋</h2>
+          <p style="margin-top:4px;">Here's your toll activity and carbon footprint summary.</p>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-ghost" id="btn-refresh" style="font-size:0.82rem;padding:8px 14px;">🔄 Refresh</button>
+          <button class="btn btn-red" id="btn-export-acc" style="font-size:0.82rem;padding:8px 16px;">⬇ Export</button>
+        </div>
+      </div>
+
+      <!-- KPI row -->
+      <div class="ov-kpi-grid" id="ov-kpi-grid">
+        <!-- Injected by JS -->
+      </div>
+
+      <!-- AI insight banner -->
+      <div class="ai-insight-banner" id="ai-insight-banner">
+        <div class="aib-icon">🤖</div>
+        <div class="aib-content">
+          <div class="aib-label">AI Insight</div>
+          <div class="aib-text" id="aib-text">Analysing your routine...</div>
+        </div>
+        <button class="btn btn-navy aib-btn" id="aib-action" style="font-size:0.82rem;padding:8px 18px;white-space:nowrap;">View Details</button>
+      </div>
+
+      <!-- Recent journeys -->
+      <div class="acc-card">
+        <div class="acc-card-header">
+          <h3>Recent Journeys</h3>
+          <button class="link-btn-navy" data-section="history">View all →</button>
+        </div>
+        <div class="table-wrap">
+          <table class="acc-table" id="recent-table">
+            <thead>
+              <tr>
+                <th>Date &amp; Time</th>
+                <th>Corridor</th>
+                <th>Hash ID</th>
+                <th>Vehicle</th>
+                <th>Emission</th>
+                <th>Toll</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="recent-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Carbon chart placeholder -->
+      <div class="grid-2" style="gap:20px;margin-top:20px;">
+        <div class="acc-card">
+          <div class="acc-card-header"><h3>Weekly Spending</h3><span class="badge badge-navy">Last 7 days</span></div>
+          <canvas id="chart-weekly" height="180"></canvas>
+        </div>
+        <div class="acc-card">
+          <div class="acc-card-header"><h3>Emission Trend</h3><span class="badge badge-amber">vs this month</span></div>
+          <canvas id="chart-emission-trend" height="180"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════ HISTORY ═══════════════ -->
+    <section class="acc-section" id="section-history">
+      <div class="acc-header">
+        <div>
+          <h2>Journey <span class="accent">History</span></h2>
+          <p style="margin-top:4px;">Complete record of your toll transactions — anonymised and secure.</p>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <select class="input" id="hist-filter" style="width:auto;padding:8px 14px;font-size:0.82rem;">
+            <option value="all">All Corridors</option>
+            <option value="E1 North KM42">E1 North</option>
+            <option value="E1 South KM42">E1 South</option>
+            <option value="KL-Seremban KM12">KL-Seremban</option>
+            <option value="Sg Buloh Toll">Sg Buloh</option>
+          </select>
+          <button class="btn btn-red" id="btn-export-hist" style="font-size:0.82rem;padding:8px 16px;">⬇ CSV</button>
+        </div>
+      </div>
+
+      <div class="acc-card">
+        <div class="table-wrap">
+          <table class="acc-table" id="history-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Corridor</th>
+                <th>Direction</th>
+                <th>Hash ID</th>
+                <th>Vehicle</th>
+                <th>Emission Idx</th>
+                <th>Confidence</th>
+                <th>Toll</th>
+              </tr>
+            </thead>
+            <tbody id="history-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════ ROUTE PATTERNS ═══════════════ -->
+    <section class="acc-section" id="section-routes">
+      <div class="acc-header">
+        <div>
+          <h2>AI-Detected <span class="accent">Route Patterns</span></h2>
+          <p style="margin-top:4px;">Your commute routines, identified and analysed by EDAT AI.</p>
+        </div>
+        <span class="badge badge-red">🤖 AI Powered</span>
+      </div>
+
+      <div class="ai-banner card" style="margin-bottom:24px;border-left:4px solid var(--red);background:linear-gradient(135deg,rgba(214,48,49,0.04),rgba(27,42,74,0.04));">
+        <div style="display:flex;gap:16px;align-items:flex-start;">
+          <div style="font-size:2rem;">🧠</div>
+          <div>
+            <h3 style="margin-bottom:6px;">How EDAT AI Learns Your Routine</h3>
+            <p style="font-size:0.88rem;">EDAT analyses your anonymous journey hashes to detect recurring travel patterns — time of day, corridor, direction, and frequency. Your plate is never used; only your hash sequence is analysed. This helps us give more accurate pricing forecasts and suggestions.</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="routes-grid" class="routes-grid">
+        <!-- Injected by JS -->
+      </div>
+    </section>
+
+    <!-- ═══════════════ AI SUGGESTIONS ═══════════════ -->
+    <section class="acc-section" id="section-suggestions">
+      <div class="acc-header">
+        <div>
+          <h2>AI <span class="accent">Personalised Suggestions</span></h2>
+          <p style="margin-top:4px;">Based on your travel patterns, here's how to reduce costs and carbon.</p>
+        </div>
+        <span class="badge badge-red">🤖 AI Generated</span>
+      </div>
+      <div id="suggestions-list" class="suggestions-list">
+        <!-- Injected by JS -->
+      </div>
+    </section>
+
+    <!-- ═══════════════ SETTINGS ═══════════════ -->
+    <section class="acc-section" id="section-settings">
+      <div class="acc-header">
+        <h2>Account <span class="accent">Settings</span></h2>
+      </div>
+      <div class="grid-2" style="gap:20px;align-items:start;">
+        <div class="acc-card">
+          <h3 style="margin-bottom:20px;">Profile Information</h3>
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" class="input" id="set-name"/>
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" class="input" id="set-email"/>
+          </div>
+          <div class="form-group">
+            <label>Primary Vehicle</label>
+            <select class="input" id="set-vehicle">
+              <option value="EV">⚡ Electric Vehicle</option>
+              <option value="Hybrid">🔋 Hybrid</option>
+              <option value="Petrol Car">🚗 Petrol Car</option>
+              <option value="Diesel">🛻 Diesel SUV</option>
+              <option value="Motorcycle">🏍️ Motorcycle</option>
+              <option value="Truck">🚛 Truck</option>
+            </select>
+          </div>
+          <button class="btn btn-red" id="btn-save-profile" style="justify-content:center;margin-top:8px;">Save Changes</button>
+        </div>
+        <div class="acc-card">
+          <h3 style="margin-bottom:20px;">Notification Preferences</h3>
+          <div class="notif-pref-list" id="notif-pref-list">
+            <div class="np-item">
+              <div><div class="np-title">Journey Complete Alerts</div><div class="np-sub">Get notified after each toll</div></div>
+              <div class="toggle active" data-pref="journey_alerts"></div>
+            </div>
+            <div class="np-item">
+              <div><div class="np-title">Weekly Summary</div><div class="np-sub">Spending &amp; carbon report</div></div>
+              <div class="toggle active" data-pref="weekly_summary"></div>
+            </div>
+            <div class="np-item">
+              <div><div class="np-title">AI Route Suggestions</div><div class="np-sub">Tips to reduce toll &amp; emissions</div></div>
+              <div class="toggle active" data-pref="ai_suggestions"></div>
+            </div>
+            <div class="np-item">
+              <div><div class="np-title">Low Confidence Alerts</div><div class="np-sub">When fallback pricing is applied</div></div>
+              <div class="toggle" data-pref="conf_alerts"></div>
+            </div>
+          </div>
+          <div class="acc-card" style="margin-top:20px;padding:16px;background:var(--sky);border:1px solid var(--sky-dark);">
+            <div style="display:flex;gap:12px;align-items:center;">
+              <span style="font-size:1.4rem;">🔒</span>
+              <div>
+                <div style="font-weight:700;font-size:0.88rem;color:var(--navy);">Privacy Mode Active</div>
+                <div style="font-size:0.78rem;color:var(--text-muted);">Your journeys are linked to your SHA-256 hash only — no plate stored.</div>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-ghost w-full" id="btn-delete-account" style="margin-top:16px;justify-content:center;color:var(--err);font-size:0.85rem;">
+            🗑 Delete Account Data
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="js/main.js"></script>
+<script src="js/account.js"></script>
+</body>
+</html>
