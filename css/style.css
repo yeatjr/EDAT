@@ -9,7 +9,7 @@
   /* Brand Colors */
   --red:         #D63031;
   --red-dark:    #B72C2C;
-  --red-light:   rgba(214,48,49,0.09);
+  --red-light:   rgba(214,48,49,0.08);
   --red-mid:     rgba(214,48,49,0.18);
 
   --navy:        #1B2A4A;
@@ -17,8 +17,10 @@
   --navy-light:  #2E4070;
   --navy-glow:   rgba(27,42,74,0.08);
 
-  --sky:         #EEF3FA;
-  --sky-dark:    #E0EAF8;
+  --cyan:        #0EA5E9;
+
+  --sky:         #EEF4FF;
+  --sky-dark:    #DDEAFF;
 
   /* Neutrals */
   --white:       #FFFFFF;
@@ -32,17 +34,17 @@
   --gray-900:    #111827;
 
   /* Semantic */
-  --bg:          var(--white);
-  --surface:     var(--gray-50);
-  --card:        var(--white);
-  --border:      var(--gray-200);
-  --text:        var(--gray-900);
-  --text-muted:  var(--gray-500);
-  --text-light:  var(--gray-400);
+  --bg:          #FFFFFF;
+  --surface:     #F9FAFB;
+  --card:        #FFFFFF;
+  --border:      #E5E7EB;
+  --text:        #111827;
+  --text-muted:  #6B7280;
+  --text-light:  #9CA3AF;
 
   /* Status */
-  --green:       #00B894;
-  --green-light: rgba(0,184,148,0.1);
+  --green:       #10B981;
+  --green-light: rgba(16,185,129,0.1);
   --amber:       #F59E0B;
   --amber-light: rgba(245,158,11,0.1);
   --err:         #EF4444;
@@ -165,11 +167,11 @@ p  { color: var(--text-muted); line-height: 1.7; }
 }
 .btn-red {
   background: var(--red); color: var(--white);
-  box-shadow: var(--shadow-red);
+  box-shadow: 0 4px 16px rgba(214,48,49,0.3);
 }
 .btn-red:hover {
   background: var(--red-dark);
-  box-shadow: 0 8px 30px rgba(214,48,49,0.35);
+  box-shadow: 0 8px 24px rgba(214,48,49,0.4);
   transform: translateY(-1px);
 }
 .btn-navy {
@@ -205,7 +207,7 @@ p  { color: var(--text-muted); line-height: 1.7; }
 .btn-ghost:hover { color: var(--text); background: var(--gray-100); }
 
 /* Legacy alias */
-.btn-primary   { background: var(--red); color: var(--white); box-shadow: var(--shadow-red); }
+.btn-primary   { background: var(--red); color: var(--white); box-shadow: 0 4px 16px rgba(214,48,49,0.3); }
 .btn-primary:hover { background: var(--red-dark); transform: translateY(-1px); }
 .btn-outline { background: transparent; border: 2px solid var(--red); color: var(--red); }
 .btn-outline:hover { background: var(--red-light); }
@@ -277,10 +279,10 @@ p  { color: var(--text-muted); line-height: 1.7; }
 }
 .nav-links a {
   padding: 8px 16px; border-radius: var(--radius-sm);
-  font-size: 0.88rem; font-weight: 500; color: var(--text-muted);
+  font-size: 0.88rem; font-weight: 500; color: var(--gray-500);
   transition: all var(--transition);
 }
-.nav-links a:hover { color: var(--text); background: var(--gray-100); }
+.nav-links a:hover { color: var(--navy); background: var(--gray-100); }
 .nav-links a.active { color: var(--red); font-weight: 600; }
 
 .nav-cta { display: flex; align-items: center; gap: 16px; }
@@ -374,12 +376,13 @@ label {
   background: var(--navy);
   color: var(--white);
   padding: 72px 0 36px;
+  border-top: 1px solid rgba(255,255,255,0.08);
 }
 .footer-grid {
   display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 56px;
   margin-bottom: 56px;
 }
-.footer-brand p { color: rgba(255,255,255,0.6); margin-top: 14px; font-size: 0.9rem; max-width: 280px; }
+.footer-brand p { color: rgba(255,255,255,0.55); margin-top: 14px; font-size: 0.9rem; max-width: 280px; }
 .footer-col h5 {
   font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em;
   color: rgba(255,255,255,0.45); margin-bottom: 18px; font-weight: 700;
@@ -387,14 +390,14 @@ label {
 .footer-col ul { list-style: none; }
 .footer-col ul li { margin-bottom: 11px; }
 .footer-col ul li a {
-  color: rgba(255,255,255,0.65); font-size: 0.9rem;
+  color: rgba(255,255,255,0.55); font-size: 0.9rem;
   transition: color var(--transition);
 }
 .footer-col ul li a:hover { color: var(--white); }
 .footer-bottom {
-  border-top: 1px solid rgba(255,255,255,0.1); padding-top: 28px;
+  border-top: 1px solid rgba(255,255,255,0.08); padding-top: 28px;
   display: flex; align-items: center; justify-content: space-between;
-  font-size: 0.82rem; color: rgba(255,255,255,0.45);
+  font-size: 0.82rem; color: rgba(255,255,255,0.4);
 }
 
 /* ── Utilities ── */
@@ -464,4 +467,11 @@ label {
   .footer-grid { grid-template-columns: 1fr; gap: 32px; }
   .section { padding: 64px 0; }
   .container { padding: 0 20px; }
+}
+
+/* ── Floating Animations ── */
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0); }
 }

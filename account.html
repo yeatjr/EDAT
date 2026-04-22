@@ -7,22 +7,25 @@
   <meta name="description" content="Your personal EDAT dashboard — toll history, AI-detected routes, carbon insights and personalised suggestions."/>
   <link rel="stylesheet" href="css/style.css"/>
   <link rel="stylesheet" href="css/account.css"/>
+  <script>
+    if (!localStorage.getItem('edat_user')) {
+      window.location.replace('login.html');
+    }
+  </script>
 </head>
 <body class="account-body">
 
 <!-- ── Top Nav ── -->
 <nav class="nav" id="main-nav">
   <div class="nav-inner">
-    <a href="index.html" class="nav-logo">
-      <div class="nav-logo-icon">⚡</div>
-      <span>ED<span class="accent">AT</span></span>
+    <a href="index.html" class="nav-logo" style="display:flex; align-items:center;">
+      <img src="assets/logo.png" alt="EDAT Logo" style="height: 72px; object-fit: contain;">
     </a>
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
-      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="dashboard.html">Live Map</a></li>
       <li><a href="analytics.html">Analytics</a></li>
-      <li><a href="transparency.html">Transparency</a></li>
-      <li><a href="tech.html">Tech &amp; API</a></li>
+      <li><a href="account.html" class="active">My Account</a></li>
     </ul>
     <div class="nav-cta">
       <div class="nav-status"><span class="status-dot active"></span> System Live</div>
@@ -52,64 +55,68 @@
 <div class="notif-panel" id="notif-panel"></div>
 
 <!-- ── Page Layout ── -->
-<div class="account-layout">
+<div class="account-container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
 
-  <!-- Sidebar -->
-  <aside class="account-sidebar">
-    <!-- User card -->
-    <div class="as-user-card">
-      <div class="asuc-avatar" id="sidebar-avatar">A</div>
-      <div class="asuc-name" id="sidebar-name">Ahmad Faris</div>
-      <div class="asuc-email" id="sidebar-email">ahmad@example.com</div>
-      <div class="asuc-vehicle">
-        <span class="badge badge-navy" id="sidebar-vehicle">🚗 Petrol Car</span>
+  <!-- Profile Header -->
+  <div class="profile-header" style="
+    display: flex; justify-content: space-between; align-items: center;
+    background: var(--white); padding: 28px 32px;
+    border-radius: 16px; margin-bottom: 24px;
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-sm);
+  ">
+    <div style="display: flex; align-items: center; gap: 20px;">
+      <div class="asuc-avatar" id="sidebar-avatar" style="width:68px;height:68px;font-size:1.8rem; background: var(--red); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; flex-shrink:0;">A</div>
+      <div>
+        <div class="asuc-name" id="sidebar-name" style="font-size:1.4rem; color:var(--navy); font-weight:800;">Ahmad Faris</div>
+        <div class="asuc-email" id="sidebar-email" style="color:var(--text-muted); font-size:0.88rem;">ahmad@example.com</div>
       </div>
     </div>
-
-    <!-- Nav -->
-    <nav class="as-nav">
-      <a href="#" class="as-nav-item active" data-section="overview">
-        <span class="asni-icon">📊</span> Overview
-      </a>
-      <a href="#" class="as-nav-item" data-section="history">
-        <span class="asni-icon">📋</span> Journey History
-      </a>
-      <a href="#" class="as-nav-item" data-section="routes">
-        <span class="asni-icon">🗺️</span> Route Patterns
-      </a>
-      <a href="#" class="as-nav-item" data-section="suggestions">
-        <span class="asni-icon">💡</span> AI Suggestions
-        <span class="as-badge" id="suggestion-count">3</span>
-      </a>
-      <a href="#" class="as-nav-item" data-section="settings">
-        <span class="asni-icon">⚙️</span> Settings
-      </a>
-    </nav>
-
-    <!-- Quick stats -->
-    <div class="as-quick-stats">
-      <div class="asqs-title">This Month</div>
-      <div class="asqs-item">
-        <span class="asqs-label">Tolls Paid</span>
-        <span class="asqs-val" id="qs-total">RM 0</span>
+    <div style="display: flex; gap: 16px; align-items: center;">
+      <!-- Primary Vehicle chip -->
+      <div style="
+        background: var(--gray-50); border: 1px solid var(--gray-200);
+        border-radius: 12px; padding: 14px 20px; min-width: 200px;
+      ">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <span style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:0.08em;">Primary Vehicle</span>
+          <span style="background:rgba(16,185,129,0.12); color:var(--green); border:1px solid rgba(16,185,129,0.25); border-radius:100px; padding:2px 8px; font-size:0.65rem; font-weight:700;">Active</span>
+        </div>
+        <div style="font-size:1.15rem; font-weight:800; color:var(--navy); font-family:var(--mono); letter-spacing:2px;">WXY 1234</div>
+        <div style="font-size:0.78rem; color:var(--text-muted); margin-top:4px;">🚗 Honda City (Petrol)</div>
       </div>
-      <div class="asqs-item">
-        <span class="asqs-label">Journeys</span>
-        <span class="asqs-val" id="qs-journeys">0</span>
-      </div>
-      <div class="asqs-item">
-        <span class="asqs-label">CO₂ Generated</span>
-        <span class="asqs-val" style="color:var(--amber);" id="qs-co2">0 kg</span>
-      </div>
-      <div class="asqs-item">
-        <span class="asqs-label">Avg Confidence</span>
-        <span class="asqs-val" style="color:var(--green);" id="qs-conf">0%</span>
-      </div>
+      <a href="vehicle-registration.html" class="btn btn-outline-red" style="padding:10px 18px; font-size:0.85rem;">+ Manage Vehicles</a>
     </div>
-  </aside>
+  </div>
+
+  <!-- Horizontal Tab Nav -->
+  <nav class="as-nav-horizontal" style="
+    display: flex; gap: 6px;
+    background: var(--white); padding: 8px;
+    border-radius: 12px; margin-bottom: 32px;
+    overflow-x: auto; border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-sm);
+  ">
+    <a href="#" class="as-nav-item active" data-section="overview" style="flex:1;text-align:center;justify-content:center;">
+      <span class="asni-icon">📊</span> Overview
+    </a>
+    <a href="#" class="as-nav-item" data-section="history" style="flex:1;text-align:center;justify-content:center;">
+      <span class="asni-icon">📋</span> Journey History
+    </a>
+    <a href="#" class="as-nav-item" data-section="routes" style="flex:1;text-align:center;justify-content:center;">
+      <span class="asni-icon">🗺️</span> Route Patterns
+    </a>
+    <a href="#" class="as-nav-item" data-section="suggestions" style="flex:1;text-align:center;justify-content:center;">
+      <span class="asni-icon">💡</span> AI Suggestions
+      <span class="as-badge" id="suggestion-count">3</span>
+    </a>
+    <a href="#" class="as-nav-item" data-section="settings" style="flex:1;text-align:center;justify-content:center;">
+      <span class="asni-icon">⚙️</span> Settings
+    </a>
+  </nav>
 
   <!-- Main content -->
-  <main class="account-main" id="account-main">
+  <main class="account-main-full" id="account-main">
 
     <!-- ═══════════════ OVERVIEW ═══════════════ -->
     <section class="acc-section active" id="section-overview">
@@ -121,6 +128,34 @@
         <div style="display:flex;gap:10px;">
           <button class="btn btn-ghost" id="btn-refresh" style="font-size:0.82rem;padding:8px 14px;">🔄 Refresh</button>
           <button class="btn btn-red" id="btn-export-acc" style="font-size:0.82rem;padding:8px 16px;">⬇ Export</button>
+        </div>
+      </div>
+
+      <!-- Quick Stats Grid -->
+      <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+        <!-- Stat 1 -->
+        <div style="background:var(--white); border:1px solid var(--gray-200); border-radius:14px; padding:20px; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:10px;">
+          <div style="width:40px; height:40px; border-radius:10px; background:var(--red-light); display:flex; align-items:center; justify-content:center; font-size:1.2rem;">💳</div>
+          <div style="font-size:0.78rem; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted);">Tolls This Month</div>
+          <div style="font-family:var(--font-display); font-size:1.6rem; font-weight:900; color:var(--navy);" id="qs-total">RM 0</div>
+        </div>
+        <!-- Stat 2 -->
+        <div style="background:var(--white); border:1px solid var(--gray-200); border-radius:14px; padding:20px; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:10px;">
+          <div style="width:40px; height:40px; border-radius:10px; background:rgba(14,165,233,0.1); display:flex; align-items:center; justify-content:center; font-size:1.2rem;">🛣️</div>
+          <div style="font-size:0.78rem; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted);">Journeys</div>
+          <div style="font-family:var(--font-display); font-size:1.6rem; font-weight:900; color:var(--navy);" id="qs-journeys">0</div>
+        </div>
+        <!-- Stat 3 -->
+        <div style="background:var(--white); border:1px solid var(--gray-200); border-radius:14px; padding:20px; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:10px;">
+          <div style="width:40px; height:40px; border-radius:10px; background:rgba(245,158,11,0.1); display:flex; align-items:center; justify-content:center; font-size:1.2rem;">🌿</div>
+          <div style="font-size:0.78rem; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted);">CO₂ Generated</div>
+          <div style="font-family:var(--font-display); font-size:1.6rem; font-weight:900; color:var(--amber);" id="qs-co2">0 kg</div>
+        </div>
+        <!-- Stat 4 -->
+        <div style="background:var(--white); border:1px solid var(--gray-200); border-radius:14px; padding:20px; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:10px;">
+          <div style="width:40px; height:40px; border-radius:10px; background:var(--green-light); display:flex; align-items:center; justify-content:center; font-size:1.2rem;">🤖</div>
+          <div style="font-size:0.78rem; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted);">AI Confidence</div>
+          <div style="font-family:var(--font-display); font-size:1.6rem; font-weight:900; color:var(--green);" id="qs-conf">0%</div>
         </div>
       </div>
 
@@ -325,6 +360,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="js/edat-core.js"></script>
 <script src="js/main.js"></script>
 <script src="js/account.js"></script>
 </body>

@@ -215,39 +215,27 @@ const VEH_RATES = {
 function generateDemoJourneys(vehicleType) {
   if (localStorage.getItem('edat_journeys')) return; // already exists
 
-  const vr = VEH_RATES[vehicleType] || VEH_RATES['Petrol Car'];
   const journeys = [];
+  const rates = VEH_RATES[vehicleType] || VEH_RATES['Petrol Car'];
   const now = new Date();
 
-  for (let i = 0; i < 30; i++) {
+  // Generate 45 demo journeys over the last 30 days
+  for (let i = 0; i < 45; i++) {
     const d = new Date(now);
-    d.setDate(d.getDate() - Math.floor(i / 2));
-    const isAM = i % 2 === 0;
-    d.setHours(isAM ? 7 + Math.floor(Math.random()*2) : 17 + Math.floor(Math.random()*2),
-               Math.floor(Math.random()*60), 0, 0);
-
-    const corridor = isAM
-      ? (i % 6 < 2 ? 'E1 North KM42' : 'KL-Seremban KM12')
-      : (i % 6 < 2 ? 'E1 South KM42' : 'Sg Buloh Toll');
-
-    const toll     = vr.min + Math.random() * (vr.max - vr.min);
-    const emission = vr.emMin + Math.random() * (vr.emMax - vr.emMin);
-    const conf     = 88 + Math.random() * 11;
-
+    d.setDate(d.getDate() - Math.floor(Math.random() * 30));
+    d.setHours(7 + Math.floor(Math.random() * 12), Math.floor(Math.random() * 60));
+    
     journeys.push({
-      id:         `J${String(i+1).padStart(3,'0')}`,
-      date:       d.toISOString().split('T')[0],
-      time:       d.toTimeString().slice(0,5),
-      corridor,
-      direction:  isAM ? 'Northbound' : 'Southbound',
-      hash:       'SHA#' + Math.random().toString(16).slice(2,6).toUpperCase(),
-      vehicle:    vehicleType,
-      toll:       parseFloat(toll.toFixed(2)),
-      emission:   parseFloat(emission.toFixed(3)),
-      confidence: parseFloat(conf.toFixed(1)),
-      isRoutine:  i < 20,
+      id: 'TRX-' + Math.random().toString(36).substr(2, 8).toUpperCase(),
+      date: d.toISOString(),
+      corridor: CORRIDORS[Math.floor(Math.random() * CORRIDORS.length)],
+      toll: rates.min + Math.random() * (rates.max - rates.min),
+      emission: rates.emMin + Math.random() * (rates.emMax - rates.emMin),
+      confidence: 90 + Math.random() * 9,
+      vehicle: vehicleType
     });
   }
-
+  
+  journeys.sort((a,b) => new Date(b.date) - new Date(a.date));
   localStorage.setItem('edat_journeys', JSON.stringify(journeys));
 }

@@ -3,6 +3,7 @@
    ============================================================ */
 
 document.addEventListener('DOMContentLoaded', () => {
+  enforceAuthGuard();
   initNav();
   initAuthNav();
   initCounters();
@@ -22,25 +23,45 @@ function initAuthNav() {
     // Logged in: show avatar pill linking to account
     const initials = user.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
     authArea.innerHTML = `
-      <a href="account.html" class="nav-user-pill" title="My Account" style="
-        display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;
-        background:var(--gray-100);border:1px solid var(--gray-200);border-radius:100px;
-        font-size:0.82rem;font-weight:700;color:var(--navy);text-decoration:none;
-        transition:all 0.2s;
-      " onmouseover="this.style.background='var(--sky)'" onmouseout="this.style.background='var(--gray-100)'">
-        <span style="
-          width:28px;height:28px;border-radius:50%;
-          background:linear-gradient(135deg,var(--red),#FF6B6B);
-          color:white;font-size:0.78rem;font-weight:800;
-          display:flex;align-items:center;justify-content:center;
-          font-family:var(--font-display);flex-shrink:0;
-        ">${initials}</span>
-        <span>${user.name.split(' ')[0]}</span>
-      </a>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <a href="account.html" class="nav-user-pill" title="My Account" style="
+          display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;
+          background:var(--gray-100);border:1px solid var(--gray-200);border-radius:100px;
+          font-size:0.82rem;font-weight:700;color:var(--navy);text-decoration:none;
+          transition:all 0.2s;
+        " onmouseover="this.style.background='var(--sky)'" onmouseout="this.style.background='var(--gray-100)'">
+          <span style="
+            width:28px;height:28px;border-radius:50%;
+            background:linear-gradient(135deg,var(--red),#FF6B6B);
+            color:white;font-size:0.78rem;font-weight:800;
+            display:flex;align-items:center;justify-content:center;
+            font-family:var(--font-display);flex-shrink:0;
+          ">${initials}</span>
+          <span>${user.name.split(' ')[0]}</span>
+        </a>
+        <button onclick="localStorage.removeItem('edat_user'); localStorage.removeItem('edat_journeys'); window.location.href='index.html';" 
+          style="background:none; border:none; color:var(--text-muted); font-size:0.8rem; cursor:pointer; text-decoration:underline;">
+          Sign Out
+        </button>
+      </div>
     `;
   } else {
     // Not logged in: show Sign In button
     authArea.innerHTML = `<a href="login.html" class="btn btn-outline-red" style="padding:9px 18px;font-size:0.85rem;">Sign In</a>`;
+  }
+}
+
+// ── Auth Guard ──
+function enforceAuthGuard() {
+  const protectedPages = ['analytics', 'account', 'vehicle-registration'];
+  const currentPath = window.location.pathname;
+  
+  // Check if current path includes any of the protected page names
+  const isProtected = protectedPages.some(page => currentPath.includes('/' + page));
+  const isLoggedIn = localStorage.getItem('edat_user') !== null;
+
+  if (isProtected && !isLoggedIn) {
+    window.location.href = 'login.html';
   }
 }
 

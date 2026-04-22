@@ -5,20 +5,20 @@
 ══════════════════════════════════════════ */
 .hero {
   min-height: 100vh;
-  background: var(--white);
+  background: linear-gradient(135deg, var(--sky) 0%, var(--white) 60%);
   display: flex; align-items: center;
   padding-top: 72px;
   position: relative;
   overflow: hidden;
 }
 
-/* Subtle geometric background accent */
+/* Subtle geometric accent */
 .hero::before {
   content: '';
   position: absolute;
   top: 0; right: 0;
   width: 55%; height: 100%;
-  background: var(--sky);
+  background: linear-gradient(135deg, rgba(238,244,255,0) 0%, rgba(221,234,255,0.7) 100%);
   clip-path: polygon(8% 0, 100% 0, 100% 100%, 0% 100%);
   z-index: 0;
 }
@@ -233,7 +233,8 @@
 /* ══════════════════════════════════════════
    HOW IT WORKS
 ══════════════════════════════════════════ */
-.how-section { background: var(--sky); }
+.how-section { background: var(--navy); color: rgba(255,255,255,0.8); }
+.how-section h2 { color: var(--white); }
 
 .how-steps {
   display: grid; grid-template-columns: repeat(3,1fr); gap: 0;
@@ -245,8 +246,9 @@
   position: absolute;
   top: 60px; left: 33%; right: 33%;
   height: 2px;
-  background: linear-gradient(90deg, var(--red), var(--navy));
+  background: linear-gradient(90deg, var(--cyan), var(--red));
   z-index: 0;
+  box-shadow: 0 0 10px rgba(0,255,255,0.3);
 }
 
 .how-step {
@@ -260,15 +262,15 @@
   color: var(--white);
 }
 .hs-num.step-1 { background: var(--red); box-shadow: 0 8px 24px rgba(214,48,49,0.3); }
-.hs-num.step-2 { background: var(--navy); box-shadow: 0 8px 24px rgba(27,42,74,0.3); }
+.hs-num.step-2 { background: var(--navy-light); border: 2px solid rgba(255,255,255,0.15); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
 .hs-num.step-3 { background: linear-gradient(135deg, var(--red), var(--navy)); box-shadow: 0 8px 24px rgba(27,42,74,0.25); }
 
 .hs-icon { font-size: 2rem; margin-bottom: 14px; }
-.how-step h3  { margin-bottom: 10px; font-size: 1.15rem; color: var(--navy); }
-.how-step p   { font-size: 0.88rem; line-height: 1.7; }
+.how-step h3  { margin-bottom: 10px; font-size: 1.15rem; color: var(--white); }
+.how-step p   { font-size: 0.88rem; line-height: 1.7; color: rgba(255,255,255,0.75); }
 
 .step-features { list-style: none; margin-top: 16px; text-align: left; display: flex; flex-direction: column; gap: 7px; }
-.step-features li { display: flex; gap: 8px; font-size: 0.82rem; color: var(--text-muted); }
+.step-features li { display: flex; gap: 8px; font-size: 0.82rem; color: rgba(255,255,255,0.6); }
 .step-features li::before { content: '✓'; color: var(--red); font-weight: 700; flex-shrink: 0; }
 
 /* ══════════════════════════════════════════
@@ -288,18 +290,20 @@
 .privacy-steps { display: flex; flex-direction: column; gap: 6px; }
 .pv-step {
   display: flex; gap: 16px; align-items: flex-start;
-  padding: 14px 18px; background: var(--gray-50);
+  padding: 14px 18px;
+  background: var(--gray-50);
   border: 1px solid var(--gray-200); border-radius: var(--radius);
   transition: all var(--transition);
 }
 .pv-step:hover { border-color: var(--red); background: var(--red-light); }
 .pv-step-num {
-  width: 32px; height: 32px; border-radius: 50%; background: var(--red);
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--red);
   color: var(--white); font-weight: 800; font-size: 0.82rem;
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
 .pv-step h4  { font-size: 0.9rem; margin-bottom: 4px; color: var(--navy); }
-.pv-step p   { font-size: 0.82rem; }
+.pv-step p   { font-size: 0.82rem; color: var(--text-muted); }
 
 /* Hash demo card */
 .hash-demo-card {
@@ -311,15 +315,17 @@
   display: flex; align-items: center; justify-content: space-between;
 }
 .hdc-title { color: var(--white); font-weight: 700; font-size: 0.88rem; }
-.hdc-badge { background: rgba(0,230,118,0.15); color: #00E676; border: 1px solid rgba(0,230,118,0.3); border-radius: 100px; padding: 3px 10px; font-size: 0.7rem; font-weight: 700; }
+.hdc-badge { background: rgba(0,230,118,0.15); color: #00B894; border: 1px solid rgba(0,184,148,0.3); border-radius: 100px; padding: 3px 10px; font-size: 0.7rem; font-weight: 700; }
 
 .hdc-body { padding: 20px; }
 .hdc-row { display: flex; gap: 10px; margin-bottom: 16px; }
 .hdc-box {
-  flex: 1; background: var(--gray-50); border: 1px solid var(--gray-200);
+  flex: 1;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
   border-radius: var(--radius); padding: 14px;
 }
-.hdc-box-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-light); margin-bottom: 8px; }
+.hdc-box-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 8px; }
 .hdc-plate { font-family: var(--font-display); font-size: 1.3rem; font-weight: 800; color: var(--navy); }
 .hdc-hash  { font-family: var(--mono); font-size: 0.7rem; color: var(--green); word-break: break-all; line-height: 1.6; }
 .hdc-arrow { font-size: 1.4rem; color: var(--red); align-self: center; flex-shrink: 0; }
@@ -371,7 +377,7 @@
 .pricing-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
 
 .pricing-card {
-  background: var(--white); border: 2px solid var(--gray-200);
+  background: var(--white); border: 1px solid var(--gray-200);
   border-radius: var(--radius-xl); padding: 36px 28px;
   text-align: center; position: relative;
   transition: all var(--transition);
@@ -380,7 +386,7 @@
 .pricing-card.featured {
   border-color: var(--navy); background: var(--navy); color: var(--white);
   transform: scale(1.04);
-  box-shadow: 0 20px 60px rgba(27,42,74,0.25);
+  box-shadow: 0 20px 60px rgba(27,42,74,0.2);
 }
 .pricing-card.featured h3 { color: var(--white); }
 .pricing-card.featured p  { color: rgba(255,255,255,0.65); }
@@ -392,23 +398,27 @@
 }
 .pc-icon { font-size: 2.8rem; margin-bottom: 16px; }
 .pc-name { font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 4px; }
-.pc-price { font-family: var(--font-display); font-size: 2.2rem; font-weight: 900; margin: 12px 0 4px; }
+.pc-price { font-family: var(--font-display); font-size: 2.2rem; font-weight: 900; margin: 12px 0 4px; color: var(--navy); }
+.pricing-card.featured .pc-price { color: var(--white); }
 .pc-price .pc-currency { font-size: 1.2rem; vertical-align: super; }
-.pc-range { font-size: 0.82rem; margin-bottom: 20px; }
+.pc-range { font-size: 0.82rem; margin-bottom: 20px; color: var(--text-muted); }
+.pricing-card.featured .pc-name  { color: rgba(255,255,255,0.55); }
+.pricing-card.featured .pc-range { color: rgba(255,255,255,0.55); }
 .pc-mult  { font-size: 0.88rem; font-weight: 600; padding: 6px 14px; border-radius: var(--radius-sm); display: inline-block; margin-bottom: 20px; }
-.pc-mult.green  { background: rgba(0,184,148,0.12); color: #00856C; }
+.pc-mult.green  { background: rgba(16,185,129,0.1); color: #059669; }
 .pc-mult.amber  { background: var(--amber-light); color: #B45309; }
 .pc-mult.red    { background: var(--red-light); color: var(--red); }
 .pc-mult.white  { background: rgba(255,255,255,0.1); color: var(--white); }
 
 .pc-features { list-style: none; text-align: left; display: flex; flex-direction: column; gap: 8px; }
-.pc-features li { display: flex; gap: 10px; font-size: 0.85rem; align-items: flex-start; }
+.pc-features li { display: flex; gap: 10px; font-size: 0.85rem; align-items: flex-start; color: var(--text-muted); }
 .pc-features .pf-icon { color: var(--green); font-size: 0.9rem; flex-shrink: 0; font-weight: 700; }
-.pricing-card.featured .pc-features li { color: rgba(255,255,255,0.8); }
+.pricing-card.featured .pc-features li { color: rgba(255,255,255,0.75); }
 
 /* Exemption notice */
 .exemption-card {
-  background: var(--white); border: 1px solid var(--gray-200);
+  background: rgba(16,185,129,0.04);
+  border: 1px solid rgba(16,185,129,0.2);
   border-left: 5px solid var(--green);
   border-radius: var(--radius-lg);
   padding: 24px 28px; margin-top: 32px;
@@ -428,7 +438,9 @@
 .vd-cards { display: flex; flex-direction: column; gap: 14px; }
 .vd-card  {
   display: flex; align-items: center; gap: 16px;
-  padding: 16px 20px; background: var(--gray-50); border: 1px solid var(--gray-200);
+  padding: 16px 20px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
   border-radius: var(--radius); transition: all var(--transition);
 }
 .vd-card:hover { border-color: var(--red); background: var(--white); box-shadow: var(--shadow-sm); }

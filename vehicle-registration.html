@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EDAT — Vehicle Registration</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/vehicle.css"/>
+  <script>
+    if (!localStorage.getItem('edat_user')) {
+      window.location.replace('login.html');
+    }
+  </script>
+</head>
+<body class="dashboard-body">
+
+<nav class="nav" id="main-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo" style="display:flex; align-items:center;">
+      <img src="assets/logo.png" alt="EDAT Logo" style="height: 72px; object-fit: contain;">
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="dashboard.html">Live Map</a></li>
+      <li><a href="analytics.html">Analytics</a></li>
+      <li><a href="account.html">My Account</a></li>
+    </ul>
+    <div class="nav-cta">
+      <div id="nav-auth-area"></div>
+      <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+</nav>
+
+<div class="vr-container">
+  <!-- Header -->
+  <div class="vr-header">
+    <a href="account.html" class="vr-back">← Back to Account</a>
+    <h1>Vehicle Declaration</h1>
+    <p>Register your vehicle to track your journeys and unlock eco-rebates.</p>
+  </div>
+
+  <form id="vehicle-form" class="vr-form">
+    
+    <!-- Section 1: Vehicle Info -->
+    <div class="vr-section card">
+      <div class="vrs-header">
+        <span class="vrs-icon">🚗</span>
+        <h2>Vehicle Information</h2>
+      </div>
+      
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Reference No:</label>
+          <input type="text" class="input readonly" value="EDAT/2026/05801" readonly />
+        </div>
+        <div class="form-group">
+          <label>Date: <span class="req">*</span></label>
+          <input type="text" class="input readonly" value="20/04/2026" readonly />
+        </div>
+        
+        <div class="form-group">
+          <label>Year:</label>
+          <input type="text" class="input readonly" value="2026" readonly />
+        </div>
+        <div class="form-group">
+          <label>Access Category: <span class="req">*</span></label>
+          <select class="input" required>
+            <option value="STUDENT">Student</option>
+            <option value="STAFF">Staff</option>
+            <option value="PUBLIC">Public</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Type of Vehicle: <span class="req">*</span></label>
+          <select class="input" required>
+            <option value="">-- Please Choose --</option>
+            <option value="Petrol">Petrol Car</option>
+            <option value="EV">Electric Vehicle (EV)</option>
+            <option value="Motorcycle">Motorcycle</option>
+            <option value="Heavy">Heavy Duty</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Vehicle Plate No: <span class="req">*</span></label>
+          <input type="text" class="input uppercase" placeholder="e.g. WXY 1234" required />
+        </div>
+
+        <div class="form-group">
+          <label>Manufacturer: <span class="req">*</span></label>
+          <select class="input" required>
+            <option value="">-- Please Choose --</option>
+            <option value="Proton">Proton</option>
+            <option value="Perodua">Perodua</option>
+            <option value="Honda">Honda</option>
+            <option value="Toyota">Toyota</option>
+            <option value="Tesla">Tesla</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Vehicle Colour: <span class="req">*</span></label>
+          <select class="input" required>
+            <option value="">-- Please Choose --</option>
+            <option value="White">White</option>
+            <option value="Black">Black</option>
+            <option value="Silver">Silver</option>
+            <option value="Red">Red</option>
+            <option value="Blue">Blue</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Model: <span class="req">*</span></label>
+          <input type="text" class="input" placeholder="e.g. Myvi 1.5" required />
+        </div>
+        <div class="form-group">
+          <label>Engine No: <span class="req">*</span></label>
+          <input type="text" class="input uppercase" placeholder="Engine Number" required />
+        </div>
+
+        <div class="form-group">
+          <label>Relationship with Applicant: <span class="req">*</span></label>
+          <select class="input" required>
+            <option value="">-- Please Choose --</option>
+            <option value="Self">Self</option>
+            <option value="Spouse">Spouse</option>
+            <option value="Parent">Parent</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Chassis No: <span class="req">*</span></label>
+          <input type="text" class="input uppercase" placeholder="Chassis Number" required />
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: License & Insurance -->
+    <div class="vr-section card">
+      <div class="vrs-header">
+        <span class="vrs-icon">🪪</span>
+        <h2>License & Insurance</h2>
+      </div>
+      
+      <div class="grid-2">
+        <div class="form-group">
+          <label>License Class: <span class="req">*</span></label>
+          <select class="input" required>
+            <option value="">-- Please Choose --</option>
+            <option value="D">D (Car)</option>
+            <option value="B2">B2 (Motorcycle <250cc)</option>
+            <option value="B">B (Motorcycle >250cc)</option>
+            <option value="E">E (Heavy)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Insurance Company: <span class="req">*</span></label>
+          <select class="input" required>
+            <option value="">-- Please Choose --</option>
+            <option value="Etiqa">Etiqa Takaful</option>
+            <option value="Allianz">Allianz</option>
+            <option value="Zurich">Zurich</option>
+            <option value="Takaful">Takaful Malaysia</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>License No: <span class="req">*</span></label>
+          <input type="text" class="input" required />
+        </div>
+        <div class="form-group">
+          <label>Insurance Policy No: <span class="req">*</span></label>
+          <input type="text" class="input" required />
+        </div>
+
+        <div class="form-group">
+          <label>License Expiry Date: <span class="req">*</span></label>
+          <input type="date" class="input" required />
+        </div>
+        <div class="form-group">
+          <label>Insurance Expiry Date: <span class="req">*</span></label>
+          <input type="date" class="input" required />
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Document Uploads -->
+    <div class="vr-section card">
+      <div class="vrs-header">
+        <span class="vrs-icon">📄</span>
+        <h2>Document Uploads</h2>
+      </div>
+      
+      <table class="upload-table">
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>File Format</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>License <span class="req">*</span></td>
+            <td class="file-format">*.pdf</td>
+            <td><button type="button" class="btn btn-green">Upload File...</button></td>
+          </tr>
+          <tr>
+            <td>Insurance <span class="req">*</span></td>
+            <td class="file-format">*.pdf</td>
+            <td><button type="button" class="btn btn-green">Upload File...</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Section 4: Declaration -->
+    <div class="vr-section card">
+      <div class="vrs-header">
+        <span class="vrs-icon">📑</span>
+        <h2>Declaration</h2>
+      </div>
+      
+      <div class="dec-box">
+        <label class="checkbox-wrap" style="align-items:flex-start">
+          <input type="checkbox" required />
+          <span class="checkmark" style="margin-top:2px;"></span>
+          <div class="dec-text">
+            If the given information is false, the authority may immediately revoke the ownership of the vehicle sticker and I may be prosecuted for the offense of giving false information. I pledge to ensure that data regarding ownership, driving license, and insurance are kept updated. 
+          </div>
+        </label>
+      </div>
+
+      <div class="dec-note">
+        <strong>Note:</strong> In the event of loss / damage / replacement of vehicle stickers, you are required to promptly ensure to do a cancellation of sticker via system. In the event of any abuse or modification, the authority may immediately cancel and prosecute the sticker owner.
+      </div>
+    </div>
+
+    <!-- Submit Action -->
+    <div class="vr-actions">
+      <button type="button" class="btn btn-outline-navy" onclick="window.location.href='account.html'">Cancel</button>
+      <button type="submit" class="btn btn-red" id="btn-submit-reg">Submit Registration</button>
+    </div>
+
+  </form>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="success-modal">
+  <div class="modal-content">
+    <h2>✅ Registration Successful</h2>
+    <p>Your vehicle has been successfully registered and linked to your EDAT hash. Peak hour travel analytics are now active.</p>
+    <button class="btn btn-navy w-full" style="justify-content:center;margin-top:20px;" onclick="window.location.href='account.html'">Back to Account</button>
+  </div>
+</div>
+
+<script src="js/edat-core.js"></script>
+<script src="js/main.js"></script>
+<script src="js/ai-agent.js"></script>
+<script>
+  document.getElementById('vehicle-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    document.getElementById('success-modal').style.display = 'flex';
+  });
+</script>
+</body>
+</html>

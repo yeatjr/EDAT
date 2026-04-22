@@ -6,75 +6,43 @@
 
   // ── Knowledge Base ──────────────────────────────────────────────────
   const KB = [
-    // Pricing
-    { tags:['price','charged','cost','how much','why','toll','expensive','rm','rate'],
+    // Pricing & Routing
+    { tags:['price','charged','cost','how much','toll','expensive','rm','rate','calculate','map','route'],
       reply: (ctx) => {
-        const j = ctx.lastJourney;
-        if (j) return `Your last toll at <strong>${j.corridor}</strong> was <strong>RM ${j.toll.toFixed(2)}</strong>. This was calculated as:<br/><br/>RM 2.00 × (1 + ${j.emission.toFixed(3)} × carbon multiplier) × speed factor = <strong>RM ${j.toll.toFixed(2)}</strong><br/><br/>Your vehicle class (${j.vehicle}) determines the carbon multiplier. Lower emission = lower toll! 🌿`;
-        return `Toll prices follow the EDAT formula:<br/><br/>📌 <strong>Toll = BaseRate × (1 + EmissionIndex × CarbonMultiplier) × SpeedFactor</strong><br/><br/>Your vehicle type determines the carbon multiplier:<br/>• EV: ×0.2 (lowest)<br/>• Petrol: ×0.8<br/>• Diesel: ×1.8+<br/><br/>Ask me about your specific charge!`;
+        return `Toll prices follow the dynamic EDAT formula:<br/><br/>📌 <strong>Toll = BaseRate × Traffic Impact × Carbon Adjustment</strong><br/><br/>By using the <strong>Dashboard Map</strong>, you can calculate the exact toll for any route! Your vehicle type determines your carbon adjustment:<br/>• EV: ×0.2 (lowest)<br/>• Petrol: ×1.0<br/>• Diesel: ×1.8+<br/><br/>Try setting a start and end point on the map and click Calculate to see your fee!`;
       }
     },
-    // Emissions
-    { tags:['emission','co2','carbon','green','environment','pollution','footprint'],
+    // Eco Score
+    { tags:['emission','co2','carbon','green','environment','eco','score'],
       reply: (ctx) => {
-        const j = ctx.lastJourney;
-        if (j) return `Your last recorded emission index was <strong>${j.emission.toFixed(3)}</strong>.<br/><br/>This puts you in the ${j.emission < 0.3 ? '🟢 Tier 1 Green' : j.emission < 0.8 ? '🟡 Tier 2 Standard' : '🔴 Tier 3 High Impact'} band.<br/><br/>To reduce your emission index, consider switching to a hybrid or EV — this alone can reduce your index by up to 75%!`;
-        return `EDAT measures emission index from <strong>0.0 (zero emission) to 2.5+ (heavy diesel)</strong>.<br/><br/>🟢 &lt;0.3 — Tier 1 Green (EV, Hybrid)<br/>🟡 0.3–0.8 — Tier 2 Standard (Petrol)<br/>🔴 &gt;0.8 — Tier 3 High Impact (Diesel, Truck)<br/><br/>Your emission index directly multiplies your toll cost!`;
+        return `Your <strong>Eco-Score</strong> is a personal metric reflecting your driving habits.<br/><br/>🟢 &gt;85 — Excellent (Low carbon footprint)<br/>🟡 60–85 — Average<br/>🔴 &lt;60 — Needs Improvement<br/><br/>To improve your score, try driving off-peak or using a greener vehicle. Check your Analytics page to see your current score!`;
+      }
+    },
+    // Rebates
+    { tags:['rebate','earn','money','reward','cashback','off-peak','peak'],
+      reply: (ctx) => {
+        return `💸 <strong>Earn EDAT Rebates!</strong><br/><br/>You earn rebates by shifting your driving to <strong>Off-Peak hours</strong>. By reducing congestion during rush hour, we reward you directly in your dashboard.<br/><br/>Check the "Eco-Commute" chart on your Analytics page to track your off-peak driving percentage. The higher it is, the more rebates you earn!`;
       }
     },
     // Hash / privacy
     { tags:['hash','privacy','plate','sha','anonymous','data','identity','stored','pii','pdpa'],
       reply: () =>
-        `🔒 <strong>EDAT never stores your licence plate!</strong><br/><br/>Here's how it works:<br/>1. Your camera reads "WXY 1234"<br/>2. SHA-256 hash is computed <em>on the camera device</em><br/>3. Only the 64-char hash "a3f9c2..." reaches our servers<br/>4. SHA-256 is <strong>mathematically irreversible</strong> — even we can't recover your plate<br/><br/>This ensures full PDPA 2010 compliance. ✅`
-    },
-    // AI confidence
-    { tags:['confidence','accuracy','ai','detection','fallback','low','uncertain','model'],
-      reply: () =>
-        `🎯 <strong>AI Confidence Thresholds:</strong><br/><br/>• ≥95% — Standard dynamic pricing<br/>• 85–95% — Standard pricing (logged)<br/>• 70–85% — ⚠️ Fallback: base rate only<br/>• &lt;70% — 🚨 Manual review queue<br/><br/>When confidence falls below 85%, EDAT applies a <strong>conservative fallback price</strong> to protect you from overcharging due to uncertain classification. You'll see this flagged on your receipt.`
-    },
-    // Exemptions / fairness
-    { tags:['exempt','free','emergency','ambulance','motorcycle','b40','hardship','discount'],
-      reply: () =>
-        `🛡️ <strong>EDAT Fairness Exemptions:</strong><br/><br/>• 🚑 <strong>Emergency vehicles</strong> (ambulance, fire, police) — <strong>RM 0.00 always</strong><br/>• 🏍️ <strong>B40 registered motorcycles</strong> — 50% off base rate<br/>• ⚡ <strong>Electric Vehicles</strong> — ×0.2 carbon multiplier (lowest tier)<br/>• 👨‍👧 Hardship override available via appeal<br/><br/>These are automatically applied by the AI — no manual claim needed!`
+        `🔒 <strong>EDAT never stores your licence plate!</strong><br/><br/>Here's how it works:<br/>1. Your camera reads "WXY 1234"<br/>2. SHA-256 hash is computed <em>on the camera device</em><br/>3. Only the 64-char hash reaches our servers<br/>4. SHA-256 is <strong>mathematically irreversible</strong><br/><br/>This ensures full PDPA 2010 compliance. ✅`
     },
     // Account / history
-    { tags:['account','history','journey','trip','record','login','register','sign'],
+    { tags:['account','history','journey','trip','record','login','register','sign','analytics'],
       reply: (ctx) => {
-        if (ctx.user) return `Hi ${ctx.user.name.split(' ')[0]}! 👋 Your account has <strong>${ctx.journeyCount} recorded journeys</strong>.<br/><br/>Head to <a href="account.html" style="color:var(--red);font-weight:700;">My Account</a> to see:<br/>• Full journey history<br/>• AI-detected commute patterns<br/>• Personalised savings suggestions<br/>• CO₂ footprint tracking`;
-        return `You can create a free EDAT account to track your:<br/><br/>📋 <strong>Journey history</strong> — every toll, anonymised<br/>🗺️ <strong>Route patterns</strong> — AI detects your commute<br/>💡 <strong>Savings tips</strong> — personalised by AI<br/>🌿 <strong>Carbon footprint</strong> — track your ESG impact<br/><br/><a href="login.html" style="color:var(--red);font-weight:700;">Sign up free →</a>`;
+        return `You can use the EDAT Dashboard to track your:<br/><br/>📋 <strong>Toll Spending</strong> — weekly spending charts<br/>🗺️ <strong>Frequent Routes</strong> — see your most common trips<br/>💡 <strong>Rebates</strong> — track your total cash earned<br/>🌿 <strong>Carbon footprint</strong> — track your CO2 emissions<br/><br/>Head to the Analytics page to see your personal stats!`;
       }
-    },
-    // Suggestions / savings
-    { tags:['save','saving','reduce','cheaper','tip','suggestion','advice','how to','lower','improve'],
-      reply: (ctx) => {
-        const v = ctx.user?.vehicle || 'Petrol Car';
-        const isEV = v === 'EV' || v === 'Hybrid';
-        return `💡 <strong>Top EDAT Saving Tips:</strong><br/><br/>${!isEV ? '⚡ <strong>Switch to EV</strong> — reduce your multiplier from ×0.8 to ×0.2 (save ~60%)<br/>' : '✅ Great — you\'re already on the green multiplier!<br/>'}⏰ <strong>Travel off-peak</strong> — 07:10 instead of 07:30 lowers your speed factor<br/>🛣️ <strong>Combine trips</strong> — fewer journeys = lower total carbon<br/>🌳 <strong>Carbon offset</strong> — offset remaining CO₂ via MyCarbon Credits<br/><br/>Check your <a href="account.html" style="color:var(--red);font-weight:700;">AI Suggestions</a> for personalised tips!`;
-      }
-    },
-    // Dashboard
-    { tags:['dashboard','live','traffic','camera','feed','monitor','operator'],
-      reply: () =>
-        `📊 The <strong>EDAT Executive Dashboard</strong> gives operators real-time visibility into:<br/><br/>• Live camera feeds with AI bounding boxes<br/>• Revenue and emission KPIs<br/>• Transaction feed with confidence scores<br/>• Pricing control sliders<br/>• Corridor heatmaps<br/><br/><a href="dashboard.html" style="color:var(--red);font-weight:700;">Open Dashboard →</a>`
-    },
-    // API
-    { tags:['api','developer','integrate','rest','webhook','websocket','sdk','code','endpoint'],
-      reply: () =>
-        `🔧 <strong>EDAT REST API v2:</strong><br/><br/>Base URL: <code style="background:var(--sky);padding:2px 6px;border-radius:3px;font-size:0.82rem;">https://api.edat.gov.my/v2</code><br/><br/>Key endpoints:<br/>• <code>GET /transactions</code> — Live data<br/>• <code>POST /hash/lookup</code> — Check a hash<br/>• <code>GET /esg/report?format=pdf</code> — ESG export<br/>• <code>wss://stream.edat.gov.my/v2/live</code> — WebSocket<br/><br/><a href="tech.html" style="color:var(--red);font-weight:700;">Full API Docs →</a>`
-    },
-    // Transparency
-    { tags:['transparent','check','verify','look up','lookup','receipt','audit','dispute'],
-      reply: () =>
-        `🔍 <strong>Check any toll transaction on the Transparency Portal:</strong><br/><br/>1. Enter your licence plate number<br/>2. We hash it locally (SHA-256) in your browser<br/>3. Look up the hash — see exactly what EDAT saw, what it charged, and why<br/><br/>You can also raise a <strong>dispute</strong> directly from the result page if you believe the charge was incorrect.<br/><br/><a href="transparency.html" style="color:var(--red);font-weight:700;">Check My Toll →</a>`
     },
     // General / hello
     { tags:['hello','hi','hey','help','what','who','can you','edat','about','explain'],
       reply: () =>
-        `👋 Hi! I'm <strong>ARIA</strong> — the EDAT AI Assistant.<br/><br/>I can help you with:<br/>🔍 Explaining your toll charges<br/>💰 Finding ways to save on tolls<br/>🌿 Understanding your emission index<br/>🔒 How SHA-256 privacy works<br/>📊 Navigating the EDAT platform<br/>🤖 AI confidence scoring<br/><br/>What would you like to know? Just ask in plain language!`
+        `👋 Hi! I'm <strong>ARIA</strong> — the EDAT AI Assistant.<br/><br/>I can help you with:<br/>🔍 Calculating your toll routes<br/>💰 Learning how to earn rebates<br/>🌿 Understanding your Eco-Score<br/>🔒 How SHA-256 privacy works<br/><br/>What would you like to know? Just ask in plain language!`
     },
   ];
 
-  const FALLBACK = `I'm not sure about that specific question yet! 🤔<br/><br/>Try asking me about:<br/>• Your toll charges and pricing<br/>• Reducing your emissions<br/>• Privacy and SHA-256 hashing<br/>• Your journey history<br/>• API documentation<br/><br/>Or head to <a href="tech.html" style="color:var(--red);">Tech & API</a> for full documentation.`;
+  const FALLBACK = `I'm not sure about that specific question yet! 🤔<br/><br/>Try asking me about:<br/>• Routing and calculating tolls<br/>• Earning rebates for off-peak driving<br/>• Your Eco-Score and emissions<br/>• Privacy and security`;
 
   // ── Context ──────────────────────────────────────────────────────────
   function getContext() {
@@ -102,12 +70,11 @@
 
   // ── Suggested questions ───────────────────────────────────────────────
   const QUICK_QUESTIONS = [
-    'Why was I charged RM 4.80?',
-    'How can I reduce my toll?',
-    'How does SHA-256 privacy work?',
-    'What is my emission index?',
-    'Am I eligible for exemptions?',
-    'Show me the API docs',
+    'How do I calculate a route?',
+    'How can I earn rebates?',
+    'What is my Eco-Score?',
+    'Is my privacy protected?',
+    'Show me my Analytics',
   ];
 
   // ── UI ────────────────────────────────────────────────────────────────

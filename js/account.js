@@ -1,6 +1,7 @@
 /* ── account.js ── */
 
 document.addEventListener('DOMContentLoaded', () => {
+  seedMockData();
   requireAuth();
   loadUser();
   initSidebarNav();
@@ -14,6 +15,69 @@ document.addEventListener('DOMContentLoaded', () => {
   initExport();
   initRefresh();
 });
+
+/* ── Mock Data Seed ── */
+function seedMockData() {
+  // Seed demo user if none exists
+  if (!localStorage.getItem('edat_user')) {
+    localStorage.setItem('edat_user', JSON.stringify({
+      name: 'Ahmad Faris',
+      email: 'ahmad.faris@example.com',
+      vehicle: 'Petrol Car',
+      plate: 'WXY 1234'
+    }));
+  }
+
+  // Seed journeys only if none exist
+  if (localStorage.getItem('edat_journeys')) return;
+
+  const corridors = [
+    { name: 'LDP Highway', dir: 'Kelana Jaya → Damansara' },
+    { name: 'PLUS Highway', dir: 'KL → Subang' },
+    { name: 'MEX Highway', dir: 'Cheras → City Centre' },
+    { name: 'SPRINT Highway', dir: 'Kerinchi → Bangsar' },
+    { name: 'KESAS Highway', dir: 'Shah Alam → Klang' },
+  ];
+
+  const vehicles = ['Petrol Car', 'Petrol Car', 'Petrol Car', 'EV', 'Motorcycle'];
+  const today = new Date();
+
+  // Generate 30 mock journeys over the past 30 days
+  const journeys = [];
+  for (let i = 0; i < 30; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    const dateStr = d.toISOString().slice(0, 10);
+    const corr = corridors[i % corridors.length];
+    const veh  = i < 26 ? 'Petrol Car' : vehicles[i % vehicles.length];
+    const isRush = i % 3 !== 0;
+    const hour = isRush ? (i % 2 === 0 ? '07' : '17') : '11';
+    const min  = String(Math.floor(Math.random() * 59)).padStart(2, '0');
+    const emission = veh === 'EV' ? 0.05 + Math.random() * 0.1 : 0.45 + Math.random() * 0.55;
+    const baseToll = corr.name === 'PLUS Highway' ? 8.50 :
+                     corr.name === 'KESAS Highway' ? 5.20 :
+                     corr.name === 'MEX Highway'   ? 1.60 :
+                     corr.name === 'SPRINT Highway'? 2.40 : 2.20;
+    const toll = baseToll * (isRush ? 1.25 : 0.85) * (1 + Math.random() * 0.1);
+    const confidence = 87 + Math.random() * 12;
+    const hash = 'EDAT-' + Math.random().toString(36).slice(2, 8).toUpperCase();
+
+    journeys.push({
+      date: dateStr,
+      time: `${hour}:${min}`,
+      corridor: corr.name,
+      direction: corr.dir,
+      hash,
+      vehicle: veh,
+      emission: parseFloat(emission.toFixed(3)),
+      confidence: parseFloat(confidence.toFixed(1)),
+      toll: parseFloat(toll.toFixed(2)),
+      isRoutine: i % 5 !== 0
+    });
+  }
+
+  localStorage.setItem('edat_journeys', JSON.stringify(journeys));
+}
 
 /* ── Auth guard ── */
 function requireAuth() {
@@ -43,7 +107,8 @@ function loadUser() {
   document.getElementById('sidebar-name').textContent  = u.name;
   document.getElementById('sidebar-email').textContent = u.email;
   document.getElementById('welcome-name').textContent  = u.name.split(' ')[0];
-  document.getElementById('sidebar-vehicle').textContent = vehicleEmoji(u.vehicle) + ' ' + u.vehicle;
+  const svEl = document.getElementById('sidebar-vehicle');
+  if (svEl) svEl.textContent = vehicleEmoji(u.vehicle) + ' ' + u.vehicle;
 
   // Settings
   const sn = document.getElementById('set-name'); if (sn) sn.value = u.name;

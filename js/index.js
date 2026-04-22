@@ -53,11 +53,16 @@ async function initHashDemo() {
   const update = async () => {
     const plate = SAMPLE_PLATES[idx % SAMPLE_PLATES.length];
     idx++;
-    rawEl.textContent  = plate;
+    
+    // Display raw plate
+    rawEl.textContent = plate;
+    
     hashEl.textContent = 'Computing...';
     hashEl.style.color = 'var(--text-muted)';
-    const hash = await sha256(plate);
-    hashEl.textContent = hash;
+    
+    // Calculate hash using the salt to match edat-core.js
+    const hash = await sha256(plate + "EDAT_SECURE_SALT_2026");
+    hashEl.textContent = hash.substring(0, 16) + '...';
     hashEl.style.color = 'var(--green)';
   };
 
