@@ -7,11 +7,13 @@
   <meta name="description" content="EDAT Analytics — vehicle distribution, emission correlations, speed analysis, and downloadable ESG reports for policy decision-making."/>
   <link rel="stylesheet" href="css/style.css"/>
   <link rel="stylesheet" href="css/analytics.css"/>
-  <script>
-    if (!localStorage.getItem('edat_user')) {
-      window.location.replace('login.html');
-    }
-  </script>
+  
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/auth.js"></script>
 </head>
 <body>
 
@@ -167,28 +169,28 @@
     <div class="analytics-widget" style="margin-top:24px;">
       <div class="aw-header">
         <div>
-          <h3>My Most Frequent Routes</h3>
-          <p style="font-size:0.82rem;margin-top:4px;">Detailed breakdown of your routine paths and their impact</p>
+          <h3>🛣️ My Top Route Analytics</h3>
+          <p style="font-size:0.82rem;margin-top:4px;">In-depth performance audit of your most frequent travel corridors.</p>
         </div>
         <div style="display:flex;gap:10px;">
-          <button class="btn btn-outline-navy" id="btn-dl-table">Download Data</button>
+          <button class="btn btn-outline-navy" id="btn-dl-table" style="font-size:0.8rem;">Export Audit Log</button>
         </div>
       </div>
       
       <div class="table-wrap">
-        <table class="acc-table" id="esg-table">
+        <table class="a-table" id="esg-table">
           <thead>
             <tr>
-              <th>Route</th>
-              <th>Journeys</th>
-              <th>Total Toll</th>
-              <th>Avg Speed</th>
-              <th>My CO₂ Emitted</th>
-              <th>Eco-Rebate Earned</th>
+              <th style="width:30%;">Corridor &amp; Direction</th>
+              <th style="text-align:center;">Trips</th>
+              <th>Financials</th>
+              <th>Avg Mobility</th>
+              <th>Carbon Impact</th>
+              <th style="text-align:right;">Eco-Incentive</th>
             </tr>
           </thead>
           <tbody id="esg-table-body">
-            <!-- Injected by JS -->
+            <!-- Injected by JS with premium styling -->
           </tbody>
         </table>
       </div>

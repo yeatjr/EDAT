@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EDAT Emergency Seeder</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px; background: #f8fafc; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: inline-block; width: 400px; }
+        #status { font-weight: bold; margin-top: 20px; padding: 15px; border-radius: 6px; }
+        .success { background: #dcfce7; color: #166534; }
+        .error { background: #fee2e2; color: #991b1b; }
+        .loading { background: #eff6ff; color: #1e40af; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>🚀 EDAT Force Seeder</h2>
+        <p>Connecting to Firebase Project: <b>edat-26e0e</b></p>
+        <div id="status" class="loading">⏳ Connecting to Firebase...</div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyD_Mtj8eJm0zKx1lx1EFx_A7e9YGoOZ_04",
+            authDomain: "edat-26e0e.firebaseapp.com",
+            projectId: "edat-26e0e",
+            storageBucket: "edat-26e0e.firebasestorage.app",
+            messagingSenderId: "765487627859",
+            appId: "1:765487627859:web:5edbf73f62435a945010a6"
+        };
+
+        const updateStatus = (msg, type) => {
+            const el = document.getElementById('status');
+            el.textContent = msg;
+            el.className = type;
+        };
+
+        async function forceSeed() {
+            try {
+                firebase.initializeApp(firebaseConfig);
+                const db = firebase.firestore();
+                updateStatus("🔗 Connected! Starting Batch Seed...", "loading");
+
+                const mockUid = "ahmad_mock_123";
+
+                // 1. Profile
+                await db.collection('users').doc(mockUid).set({
+                    email: "ahmad@edat.ai",
+                    displayName: "Ahmad",
+                    greenTripCount: 15,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // 2. Detailed History (20 Trips)
+                const historyRef = db.collection('users').doc(mockUid).collection('history');
+                const entryPoints = ["Kajang", "Skudai", "Sg Besi", "Damansara", "Subang", "Cheras", "Shah Alam", "Klang", "Ipoh South", "Juru"];
+                const exitPoints = ["Ayer Keroh", "Yong Peng", "Senai", "Rawang", "Seremban", "Nilai", "Bangi", "Putrajaya", "Cyberjaya", "Kulai"];
+
+                updateStatus("🧹 Clearing old history...", "loading");
+                const existing = await historyRef.get();
+                const batch = db.batch();
+                existing.forEach(doc => batch.delete(doc.ref));
+                await batch.commit();
+
+                for (let i = 0; i < 50; i++) {
+                    updateStatus(`⏳ Saving trip ${i+1} of 50...`, "loading");
+                    const entry = entryPoints[Math.floor(Math.random() * entryPoints.length)];
+                    const exit = exitPoints[Math.floor(Math.random() * exitPoints.length)];
+                    const charge = (Math.random() * 35 + 5).toFixed(2);
+
+                    // Traffic Fee logic: 30 trips < RM 1, 20 capped at RM 4
+                    let tFee;
+                    if (i < 30) {
+                        tFee = (Math.random() * 0.5).toFixed(2); // Very low/Zero fee
+                    } else {
+                        tFee = (Math.random() * 2.5 + 1.5).toFixed(2); // Capped at RM 4.00 max
+                    }
+                    
+                    const date = new Date();
+                    date.setDate(date.getDate() - Math.floor(Math.random() * 30));
+                    date.setHours(Math.floor(Math.random() * 24), Math.floor(Math.random() * 60));
+
+                    await historyRef.add({
+                        entry: entry + " (EDAT)",
+                        exit: exit + " (EDAT)",
+                        totalCharge: parseFloat(charge) + parseFloat(tFee),
+                        trafficFee: parseFloat(tFee),
+                        distance: (Math.random() * 150 + 10).toFixed(0) + " km",
+                        timestamp: firebase.firestore.Timestamp.fromDate(date)
+                    });
+                }
+
+                // 3. Voucher
+                await db.collection('vouchers').add({
+                    userId: mockUid,
+                    code: "WELCOME-AHMAD",
+                    type: "Early Adopter Reward",
+                    value: "RM 5.00 Discount",
+                    status: "active",
+                    awardedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                updateStatus("✅ COMPLETED 20/20: Ahmad is fully synced!", "success");
+            } catch (err) {
+                console.error(err);
+                updateStatus("❌ ERROR: " + err.message, "error");
+            }
+        }
+
+        window.onload = forceSeed;
+    </script>
+</body>
+</html>

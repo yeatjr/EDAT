@@ -6,8 +6,8 @@
   <title>EDAT — Live Map & Journey Planner</title>
   <meta name="description" content="View live traffic conditions across Malaysia and calculate dynamic AI toll pricing for your journey." />
   
-  <!-- Leaflet CSS for Map -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+  <!-- Leaflet CSS for Map (Reliable CDN) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
   
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/dashboard.css" />
@@ -66,72 +66,219 @@
           <div class="autocomplete-wrapper">
             <input type="text" id="jp-start" class="gm-input" placeholder="Choose starting point..." autocomplete="off" />
             <div id="jp-start-results" class="autocomplete-items"></div>
+            <div id="entry-plaza-label" style="font-size: 0.7rem; color: #10b981; margin-top: 4px; padding-left: 2px;">📍 Entry: (Select start point)</div>
           </div>
           <div class="autocomplete-wrapper">
             <input type="text" id="jp-end" class="gm-input" placeholder="Choose destination..." autocomplete="off" />
             <div id="jp-end-results" class="autocomplete-items"></div>
+            <div id="exit-plaza-label" style="font-size: 0.7rem; color: #10b981; margin-top: 4px; padding-left: 2px;">📍 Exit: (Select destination)</div>
           </div>
         </div>
         <button class="gm-swap" id="btn-swap">⇅</button>
       </div>
 
-      <!-- Vehicle Type -->
-      <div class="gm-options">
-        <select id="jp-vehicle" class="gm-select-small">
+      <!-- Vehicle Type & Time -->
+      <div class="gm-options" style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <select id="jp-vehicle" class="gm-select-small" style="flex: 2;">
           <option value="Petrol">Petrol Car (ICE)</option>
           <option value="EV">Electric Vehicle (EV)</option>
           <option value="Diesel">Diesel / Heavy</option>
         </select>
+        <input type="time" id="jp-time" class="gm-select-small" style="flex: 1.5; padding: 5px;">
         <button class="btn btn-red" id="btn-calc" style="padding: 6px 12px; font-size: 0.8rem;">Calculate</button>
+      </div>
+
+      <!-- Eco-Tip Suggestion -->
+      <div id="peak-tip" style="display:none; margin: 15px 0 0; padding: 12px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; font-size: 0.78rem; color: #92400e; line-height: 1.4;">
+        <div style="display: flex; gap: 8px; align-items: flex-start;">
+          <span style="font-size: 1.1rem;">💡</span>
+          <div>
+            <strong>Eco-Tip:</strong> Traveling during off-peak hours (e.g., 10:00 AM) can reduce your <strong>Environmental Parameters</strong> fee significantly!
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Results Area -->
-    <div class="gm-results" id="jp-results" style="display:none;">
+    <!-- Results Area (Now contains Environment Panel for full scrolling) -->
+    <div class="gm-results" id="jp-results" style="overflow-y: auto; flex: 1; background: var(--gray-50);">
       
-      <!-- Route Option Card -->
-      <div class="gm-route-card">
+      <!-- Live Environment Panel (Moved here for scrollability) -->
+      <div class="gm-env-panel" id="env-panel" style="padding: 15px; margin: 15px; border-radius: 8px; background: #f8fafc; color: var(--navy); display: flex; flex-direction: column; gap: 10px; border: 1px solid var(--gray-200);">
+        <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Infrastructure Analyst • Live Status</div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span id="env-weather-icon" style="font-size: 1.2rem;">☀️</span>
+            <span id="env-weather-text" style="font-size: 0.85rem; font-weight: 500;">Clear (0.0mm/h)</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 1.2rem;">🌡️</span>
+            <span id="env-temp-text" style="font-size: 0.85rem; font-weight: 500;">30°C</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 1.2rem;">💨</span>
+            <span id="env-aqi-text" style="font-size: 0.85rem; font-weight: 500;">API: 45</span>
+          </div>
+        </div>
+        <div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
+            <span id="env-load-text">Highway Load: 65%</span>
+            <span id="env-load-status" style="color: var(--green); font-weight:bold;">Normal</span>
+          </div>
+          <div style="width: 100%; height: 6px; background: var(--gray-200); border-radius: 3px; overflow: hidden;">
+            <div id="env-load-bar" style="width: 65%; height: 100%; background: var(--green); transition: all 0.3s;"></div>
+          </div>
+        </div>
+        <div style="margin-top: 5px; display: flex; gap: 8px;">
+          <select id="sim-scenario" class="gm-select-small" style="flex: 1; border: 1px solid var(--gray-300); padding: 4px; border-radius: 4px;">
+            <option value="CLEAR_NORMAL">Simulation: Clear & Normal</option>
+            <option value="STORM_PEAK">Simulation: Storm & Peak</option>
+            <option value="HAZE_NORMAL">Simulation: Haze (API 150)</option>
+            <option value="HEAT_WAVE">Simulation: Extreme Heatwave (>35°C)</option>
+          </select>
+          <button id="btn-sync-apims" class="btn btn-outline" style="padding: 4px 12px; font-size: 0.75rem; border-color: var(--amber); color: var(--amber); background: #fff; font-weight: 600;">
+            Sync
+          </button>
+        </div>
+        <div id="sync-status" style="font-size: 0.65rem; color: var(--text-muted); text-align: right; margin-top: 2px;">Last Sync: --</div>
+        <div id="env-source-label" style="font-size: 0.6rem; color: #10b981; text-align: right; margin-top: 1px;"></div>
+      </div>
+      
+      <!-- AI Suggestion Banner Removed -->
+      
+      <div id="route-options-container" style="display: block;">
+
+
+      <div id="route-options-list" style="display: flex; flex-direction: column; gap: 10px;">
+        
+        <!-- Private Driving Route Option Card -->
+        <div class="gm-route-card active-route" id="card-private" style="border: 2px solid var(--blue); cursor: pointer;">
+
         <div class="gm-rc-header">
           <div class="gm-rc-title">via AI Dynamic Tolling Route</div>
           <div class="gm-rc-time" id="res-time">3 hr 32 min</div>
         </div>
         <div class="gm-rc-dist" id="res-dist">317 km</div>
         
-        <div class="gm-rc-desc">Fastest route now due to traffic conditions</div>
-        <div class="gm-rc-alert">⚠️ This route has tolls.</div>
+
+        <div class="gm-rc-alert" id="res-toll-detector">🔍 Scanning for nearest toll plazas...</div>
         
-        <!-- EDAT Toll Breakdown -->
+        <!-- Agentic Toll Breakdown -->
         <div class="gm-toll-box">
-          <div class="gtb-title">EDAT Toll Calculation</div>
+          <div class="gtb-title" style="display:flex; justify-content:space-between; align-items:center;">
+            <span>Intelligent EDAT Quote</span>
+            <span id="res-capped" style="font-size:0.7rem; background:#ef4444; color:white; padding:2px 6px; border-radius:4px; display:none; font-weight:bold;">CAPPED</span>
+          </div>
+          
           <div class="gtb-row">
-            <span>Base Toll</span>
+            <span>Base Toll (Official)</span>
             <span id="res-base">RM --</span>
           </div>
-          <div class="gtb-row">
-            <span>Traffic Impact <span id="res-traf-multi"></span></span>
-            <span id="res-traf-fee" style="color:var(--amber)">RM --</span>
+          
+          <div style="font-size:0.75rem; color:#aaa; margin-top:12px; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px;">Environmental Parameters</div>
+          <div class="gtb-row" id="row-vol">
+            <span>Traffic Volume <span id="res-vol-multi" style="font-size:0.75rem; color:#888;"></span></span>
+            <span id="res-vol-fee" style="color:#fbbf24">RM --</span>
           </div>
-          <div class="gtb-row">
-            <span>Carbon Adj. <span id="res-carb-multi"></span></span>
-            <span id="res-carb-fee" style="color:var(--green)">RM --</span>
+          <div class="gtb-row" id="row-wea">
+            <span>Weather Safety <span id="res-wea-multi" style="font-size:0.75rem; color:#888;"></span></span>
+            <span id="res-wea-fee" style="color:#fbbf24">RM --</span>
           </div>
-          <div class="gtb-row total">
-            <span>Total Expected Fee</span>
-            <span id="res-total">RM --</span>
+          <div class="gtb-row" id="row-temp">
+            <span>Heat Stress <span id="res-temp-multi" style="font-size:0.75rem; color:#888;"></span></span>
+            <span id="res-temp-fee" style="color:#fbbf24">RM --</span>
           </div>
+          <div class="gtb-row" id="row-road">
+            <span>Road Env. Load <span id="res-road-multi" style="font-size:0.75rem; color:#888;"></span></span>
+            <span id="res-road-fee" style="color:#fbbf24">RM --</span>
+          </div>
+          <div class="gtb-row" id="row-aqi">
+            <span>Air Quality <span id="res-aqi-multi" style="font-size:0.75rem; color:#888;"></span></span>
+            <span id="res-aqi-fee" style="color:#fbbf24">RM --</span>
+          </div>
+          <div class="gtb-row" id="row-carb">
+            <span>Carbon Target <span id="res-carb-multi" style="font-size:0.75rem; color:#888;"></span></span>
+            <span id="res-carb-fee" style="color:#4ade80">RM --</span>
+          </div>
+
+          <div class="gtb-row total" style="margin-top:12px; border-top: 1px solid rgba(255,255,255,0.1); padding-top:10px;">
+            <span>Final Dynamic Quote</span>
+            <span id="res-total" style="font-size:1.1rem;">RM --</span>
+          </div>
+        </div> <!-- Close gm-toll-box -->
+      </div> <!-- Close card-private -->
+      
+      <!-- Public Transit Route Option Card -->
+        <div class="gm-route-card" id="card-transit" style="cursor: pointer; opacity: 0.85;">
+          <div class="gm-rc-header">
+            <div class="gm-rc-title" style="display:flex; align-items:center; gap:6px;">
+              <span id="res-transit-name">🚌 via Public Transit</span>
+              <span id="badge-transit-cheap" style="font-size:0.65rem; background:#10b981; color:white; padding:2px 6px; border-radius:4px; font-weight:bold; display:none;">CHEAPEST</span>
+            </div>
+            <div class="gm-rc-time" id="res-time-transit">-- hr -- min</div>
+          </div>
+          <div class="gm-rc-dist">Bus / LRT Network</div>
+          
+          <!-- Detailed Transit Steps (Chips) -->
+          <div id="transit-steps-container" style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 12px 0; padding: 8px; background: rgba(0,0,0,0.03); border-radius: 6px;">
+            <!-- Chips will be injected here -->
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+            <div id="res-transit-times" style="font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 10px;">
+               <span id="res-dep-time">--:--</span> 
+               <span style="opacity:0.5">→</span> 
+               <span id="res-arr-time">--:--</span>
+            </div>
+
+          </div>
+        </div>
+
+      </div> <!-- Close route-options-list -->
+    </div> <!-- Close route-options-container -->
+
+    <!-- NEW: My Activity Section (Visible when logged in) -->
+    <div id="user-activity-panel" style="display:none; padding: 15px; border-top: 2px solid var(--gray-200); margin-top: 10px;">
+      <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 15px;">My Activity & Rewards</div>
+      
+      <!-- Voucher Wallet -->
+      <div id="voucher-wallet" style="margin-bottom: 20px;">
+        <div style="font-size: 0.85rem; font-weight: 700; color: var(--navy); margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+          <span>🎫 My Vouchers</span>
+          <span id="voucher-count" style="font-size: 0.65rem; background: var(--amber); color: white; padding: 1px 6px; border-radius: 10px;">0</span>
+        </div>
+        <div id="voucher-list" style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="font-size: 0.75rem; color: var(--text-muted); font-style: italic;">No active vouchers yet.</div>
         </div>
       </div>
 
+      <!-- Trip History -->
+      <div id="trip-history-section">
+        <div style="font-size: 0.85rem; font-weight: 700; color: var(--navy); margin-bottom: 10px;">📜 Recent Trips</div>
+        <div id="history-list" style="display: flex; flex-direction: column; gap: 10px;">
+          <div style="font-size: 0.75rem; color: var(--text-muted); font-style: italic;">Log in to see your history.</div>
+        </div>
+      </div>
     </div>
-  </div>
+
+  </div> <!-- Close jp-results -->
+</div> <!-- Close gm-sidebar -->
+
 
   <!-- Map Container -->
   <div id="edat-map" class="edat-map-container"></div>
 
-</div>
+</div> <!-- Close dash-layout -->
 
 <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+<!-- Firebase SDKs (Compat Version for easy integration) -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/auth.js"></script>
+
 <script src="js/edat-core.js"></script>
 <script src="js/main.js"></script>
 <script src="js/dashboard.js"></script>

@@ -171,27 +171,268 @@ class PMBIngestor {
 }
 
 /**
- * 5. Dynamic Pricing Engine (Simulation Layer)
- * Formula: Toll = Base Rate + (Congestion Factor × Time Multiplier)
+ * EnvironmentalDataHub: Manages hourly snapshots from official sources (APIMS/Weather).
+ * Simulates a Spatio-Temporal mapping of roads to monitoring stations.
  */
-class DynamicPricingEngine {
-  calculateToll(baseRate, congestionLevel, dateObj = new Date()) {
-    // Time Multiplier
-    const hr = dateObj.getHours();
-    let timeMultiplier = 1.0;
+class EnvironmentalDataHub {
+  constructor() {
+    this.lastSync = new Date().toLocaleTimeString();
+    // Localized multipliers for specific road segments
+    this.roadIntensityMap = {
+      "FEDERAL_HQ": 1.0,
+      "E1_DUTA": 1.0,
+      "E2_SKLAL": 1.0,
+      "SPRINT": 1.0
+    };
+  }
+
+  // Simulates the hourly official sync
+  async syncAPIMS() {
+    console.log("[SYSTEM] Syncing with Official APIMS Station Data...");
     
-    if ((hr >= 7 && hr <= 9) || (hr >= 17 && hr <= 19)) {
-      timeMultiplier = 1.5; // Peak hour penalty
-    } else if (hr >= 22 || hr <= 5) {
-      timeMultiplier = 0.8; // Night time discount
+    // Simulate real-time fluctuation for each road
+    for (let road in this.roadIntensityMap) {
+       // Random API reading simulation (40-180)
+       const simulatedAPI = 40 + Math.floor(Math.random() * 140); 
+       
+       if (simulatedAPI > 150) {
+         this.roadIntensityMap[road] = 1.25; // Hazardous road load
+       } else if (simulatedAPI > 100) {
+         this.roadIntensityMap[road] = 1.15; // Unhealthy road load
+       } else if (simulatedAPI > 50) {
+         this.roadIntensityMap[road] = 1.05; // Moderate road load
+       } else {
+         this.roadIntensityMap[road] = 1.0;  // Clean air
+       }
+    }
+    
+    this.lastSync = new Date().toLocaleTimeString();
+    return this.roadIntensityMap;
+  }
+}
+
+/**
+ * Agent 1: Analyst Agent (Environment & Load)
+ * Analyzes traffic volume, weather, and air quality.
+ */
+class AnalystAgent {
+  constructor(dataHub) {
+    this.dataHub = dataHub;
+    this.currentState = {
+      occupancy: 0.65, // 65% load
+      rainfall: 0.0,   // mm/h
+      api: 45,         // Global Air Pollutant Index
+      temperature: 30, // Celsius
+      currentRoadId: "FEDERAL_HQ" 
+    };
+  }
+
+  setScenario(scenario) {
+    if (scenario === 'STORM_PEAK') {
+      this.currentState = { ...this.currentState, occupancy: 0.90, rainfall: 15.0, api: 45, temperature: 26 };
+    } else if (scenario === 'HAZE_NORMAL') {
+      this.currentState = { ...this.currentState, occupancy: 0.50, rainfall: 0.0, api: 150, temperature: 34 };
+    } else if (scenario === 'HEAT_WAVE') {
+      this.currentState = { ...this.currentState, occupancy: 0.40, rainfall: 0.0, api: 60, temperature: 38 };
+    } else {
+      this.currentState = { ...this.currentState, occupancy: 0.40, rainfall: 0.0, api: 30, temperature: 30 };
+    }
+  }
+
+  analyze(overrideHour = null) {
+    const { rainfall, api, temperature, currentRoadId } = this.currentState;
+    
+    // Time-based Peak Logic (STATIC FACTOR)
+    const hour = overrideHour !== null ? overrideHour : new Date().getHours();
+    const isMorningPeak = (hour >= 7 && hour <= 9);
+    const isEveningPeak = (hour >= 17 && hour <= 20);
+    const isClockPeak = isMorningPeak || isEveningPeak;
+
+    // AUTO-ADJUST OCCUPANCY BASED ON TIME (unless overridden)
+    // If it's peak time, road is heavy (85%), else it's light (35%)
+    if (overrideHour !== null) {
+      this.currentState.occupancy = isClockPeak ? 0.85 : 0.35;
+    }
+    const occupancy = this.currentState.occupancy;
+
+    let staticMult = 1.0;
+    if (isClockPeak) {
+      staticMult = 1.7; // Static Peak is higher (1.7x)
     }
 
-    // Congestion factor ranges from 0.0 (empty) to 1.0 (gridlock)
-    // Dynamic component adds up to 50% extra to the base rate during heavy congestion
-    const congestionFactor = congestionLevel * 0.5;
+    // Sensor-based Logic (DYNAMIC FACTOR)
+    let dynamicMult = 1.0;
+    if (occupancy > 0.85) {
+      dynamicMult = 1.4; // Dynamic Peak is slightly lower (1.4x)
+    } else if (occupancy >= 0.60) {
+      dynamicMult = 1.15;
+    }
 
-    const finalToll = baseRate + (baseRate * congestionFactor * timeMultiplier);
-    return parseFloat(finalToll.toFixed(2));
+    // Final Volume Multiplier (Combined - using the higher of the two)
+    const volumeMult = Math.max(staticMult, dynamicMult);
+    let volumeReason = "Normal Highway Load";
+    
+    if (isClockPeak && occupancy > 0.85) volumeReason = "Critical Peak (Time + High Load)";
+    else if (isClockPeak) volumeReason = "Scheduled Peak Hour";
+    else if (occupancy > 0.85) volumeReason = "Dynamic Congestion Detected";
+    else if (occupancy >= 0.60) volumeReason = "Moderate Traffic Flow";
+
+    // LOWERED Rain Multipliers
+    let weatherMult = 1.0, weatherReason = "Clear/Dry";
+    if (rainfall > 10.0) { weatherMult = 1.08; weatherReason = "Heavy Rain Safety Surcharge"; }
+    else if (rainfall > 2.5) { weatherMult = 1.05; weatherReason = "Moderate Rain Safety Surcharge"; }
+    else if (rainfall > 0.5) { weatherMult = 1.02; weatherReason = "Light Rain Safety Surcharge"; }
+
+    // Temperature Multiplier (Heat Stress)
+    let tempMult = 1.0, tempReason = "Optimal Temperature";
+    if (temperature > 35) { tempMult = 1.05; tempReason = "Extreme Heat Stress Surcharge"; }
+    else if (temperature > 32) { tempMult = 1.02; tempReason = "High Temperature Warning"; }
+
+    // Road Specific Carbon Intensity from DataHub (Official Sources)
+    const roadCarbonMult = this.dataHub.roadIntensityMap[currentRoadId] || 1.0;
+    let roadReason = roadCarbonMult > 1.0 
+      ? `Road Environmental Load: High Localized Emissions (${currentRoadId})`
+      : "Road Environmental Health: Good";
+
+    let aqiMult = 1.0, aqiReason = "Good Global Air Quality";
+    if (api > 300) { aqiMult = 1.2; aqiReason = "Hazardous Air Quality Penalty"; }
+    else if (api > 200) { aqiMult = 1.15; aqiReason = "Very Unhealthy Air Quality Penalty"; }
+    else if (api > 100) { aqiMult = 1.1; aqiReason = "Unhealthy Air Quality Penalty"; }
+    else if (api > 50) { aqiMult = 1.05; aqiReason = "Moderate Air Quality Penalty"; }
+
+    return {
+      factors: { volumeMult, weatherMult, aqiMult, roadCarbonMult, tempMult },
+      reasons: { volumeReason, weatherReason, aqiReason, roadReason, tempReason },
+      raw: this.currentState,
+      lastSync: this.dataHub.lastSync
+    };
+  }
+}
+
+/**
+ * Agent 2: Legal Agent (Policy & RAG)
+ * Enforces Carbon Multipliers and Price Caps based on simulated regulations.
+ */
+class LegalAgent {
+  constructor() {
+    this.knowledgeBase = {
+      "Act_1987_Section_44": "Maximum toll surcharges cannot exceed 3.5x base rate.",
+      "EV_Incentive_2024": "Zero-emission vehicles must receive a minimum 80% reduction (0.2x multiplier).",
+      "Diesel_Penalty_2025": "High-emission diesel vehicles receive a 1.8x carbon multiplier."
+    };
+  }
+
+  evaluatePolicy(vehicleType, analystData) {
+    let carbonMult = 1.0, carbonReason = "Standard Emission Vehicle";
+    let exemptFromAQI = false;
+
+    if (vehicleType === 'EV') {
+      carbonMult = 0.6; carbonReason = "Zero Emissions Incentive"; exemptFromAQI = true;
+    } else if (vehicleType === 'Hybrid') {
+      carbonMult = 0.8; carbonReason = "Low Emissions Incentive"; exemptFromAQI = true;
+    } else if (vehicleType === 'Diesel') {
+      carbonMult = 1.5; carbonReason = "Heavy Emissions / Particulate Penalty";
+    } else if (vehicleType === 'Motorcycle') {
+      carbonMult = 0.5; carbonReason = "Motorcycle Base Rate";
+    }
+
+    let effectiveAqiMult = analystData.factors.aqiMult;
+    let effectiveAqiReason = analystData.reasons.aqiReason;
+    let effectiveRoadMult = analystData.factors.roadCarbonMult;
+    let effectiveRoadReason = analystData.reasons.roadReason;
+    let effectiveTempMult = analystData.factors.tempMult;
+    let effectiveTempReason = analystData.reasons.tempReason;
+
+    // RULE: Green Vehicles are exempt from Environmental Surcharges
+    if (exemptFromAQI) {
+      if (effectiveAqiMult > 1.0) {
+        effectiveAqiMult = 1.0; effectiveAqiReason = "AQI Surcharge Waived (Green Vehicle)";
+      }
+      if (effectiveRoadMult > 1.0) {
+        effectiveRoadMult = 1.0; effectiveRoadReason = "Road Env. Load Waived (Green Vehicle)";
+      }
+      if (effectiveTempMult > 1.0) {
+        effectiveTempMult = 1.0; effectiveTempReason = "Heat Surcharge Waived (Green Vehicle)";
+      }
+    }
+
+    return {
+      factors: { carbonMult, effectiveAqiMult, effectiveRoadMult, effectiveTempMult },
+      reasons: { carbonReason, effectiveAqiReason, effectiveRoadReason, effectiveTempReason },
+      citations: [this.knowledgeBase["EV_Incentive_2024"], this.knowledgeBase["Act_1987_Section_44"]]
+    };
+  }
+
+  enforceCaps(proposedTotal, baseToll) {
+    const MAX_CAP = 3.5;
+    const limit = baseToll * MAX_CAP;
+    if (proposedTotal > limit) {
+      return { capped: true, finalTotal: limit, reason: `Capped at RM ${limit.toFixed(2)} (Regulatory Limit: 3.5x Base)` };
+    }
+    return { capped: false, finalTotal: proposedTotal, reason: "Within regulatory limits." };
+  }
+}
+
+/**
+ * Agent 3: Pricing Agent (Orchestration)
+ * Combines everything and generates the final quote.
+ */
+class PricingAgent {
+  constructor(analystAgent, legalAgent) {
+    this.analyst = analystAgent;
+    this.legal = legalAgent;
+  }
+
+  async calculateQuote(baseToll, vehicleType = 'Petrol', hourOverride = null) {
+    // 1. Update the Analyst state based on time before calculating
+    this.analyst.analyze(hourOverride);
+    
+    const environment = this.analyst.currentState;
+    
+    try {
+      const response = await fetch('http://localhost:3000/api/pricing/calculate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ baseToll, vehicleType, environment, hourOverride })
+      });
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Backend Offline: Using Local Pricing Engine");
+      
+      // Use the analysis we performed at the start of this function
+      const analysis = this.analyst.analyze(hourOverride);
+      
+      // Calculate Final Total based on multipliers
+      const f = analysis.factors;
+      const combinedMult = (f.volumeMult * f.weatherMult * f.tempMult * f.roadCarbonMult);
+      let proposedTotal = baseToll * combinedMult;
+      
+      // Simple EV Rebate logic for local fallback
+      if (vehicleType === 'EV') proposedTotal *= 0.8;
+
+      return {
+        baseToll: baseToll,
+        finalTotal: proposedTotal,
+        isCapped: false,
+        breakdown: {
+          analyst: [
+            { factor: 'Traffic Volume', mult: f.volumeMult, reason: analysis.reasons.volumeReason, fee: (baseToll * f.volumeMult) - baseToll },
+            { factor: 'Weather (Rain)', mult: f.weatherMult, reason: analysis.reasons.weatherReason, fee: (baseToll * f.weatherMult) - baseToll },
+            { factor: 'Heat Stress', mult: f.tempMult, reason: analysis.reasons.tempReason, fee: (baseToll * f.tempMult) - baseToll },
+            { factor: 'Road Carbon Load', mult: f.roadCarbonMult, reason: analysis.reasons.roadReason, fee: (baseToll * f.roadCarbonMult) - baseToll }
+          ],
+          legal: [
+            { factor: 'Air Quality', mult: f.aqiMult, reason: analysis.reasons.aqiReason, fee: (baseToll * f.aqiMult) - baseToll },
+            { factor: 'Vehicle Policy', mult: vehicleType === 'EV' ? 0.8 : 1.0, reason: vehicleType === 'EV' ? 'EV Discount' : 'Standard', fee: vehicleType === 'EV' ? -(baseToll * 0.2) : 0 }
+          ],
+          enforcement: "Local Analysis Engine Active"
+        },
+        rawState: environment,
+        lastSync: new Date().toLocaleTimeString()
+      };
+    }
   }
 }
 
@@ -249,11 +490,15 @@ class PredictiveRecommendationEngine {
       
       // Simulate historical congestion (higher during typical peaks)
       const hr = future.getHours();
-      let estCongestion = 0.3;
+      let estCongestion = 0.4;
       if (hr >= 7 && hr <= 9) estCongestion = 0.8;
       if (hr >= 17 && hr <= 19) estCongestion = 0.9;
 
-      const estPrice = this.pricing.calculateToll(baseRate, estCongestion, future);
+      // Temporarily set the analyst state to predict
+      const originalOccupancy = this.pricing.analyst.currentState.occupancy;
+      this.pricing.analyst.currentState.occupancy = estCongestion;
+      const estPrice = this.pricing.calculateQuote(baseRate, 'Petrol').finalTotal;
+      this.pricing.analyst.currentState.occupancy = originalOccupancy; // Restore
       
       predictions.push({
         time: future.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
@@ -301,10 +546,21 @@ class EDATSystemArchitecture {
     this.Behaviour = new BehaviourLayer();
     this.Matching = new TransactionMatchingEngine(this.Identity, this.Behaviour);
     this.PMB = new PMBIngestor(this.Matching);
-    this.Pricing = new DynamicPricingEngine();
+    
+    // Multi-Agent System with Official Data Hub
+    this.DataHub = new EnvironmentalDataHub();
+    this.Analyst = new AnalystAgent(this.DataHub);
+    this.Legal = new LegalAgent();
+    this.Pricing = new PricingAgent(this.Analyst, this.Legal);
+    
     this.Rebate = new RebateEngine(this.Identity, this.Behaviour);
     this.Predictive = new PredictiveRecommendationEngine(this.Pricing);
     this.Lifecycle = new DataLifecycleManager(this.PMB, this.Behaviour);
+  }
+
+  setScenario(scenarioName) {
+    this.Analyst.setScenario(scenarioName);
+    console.log(`[EDAT Simulation] Scenario set to: ${scenarioName}`);
   }
 
   // Demonstration method to test the architecture in console
@@ -315,15 +571,19 @@ class EDATSystemArchitecture {
     const user = await this.Identity.registerUser("Test User", "test@edat.com", "WXY1234", "RFID");
     console.log("User Opted In & Hashed:", user);
 
-    // 2. PMB Ingests Data (One matching user, one anonymous)
+    // 2. PMB Ingests Data
     await this.PMB.ingestData(new Date().toISOString(), "E1 North", "RFID", "WXY1234", 2.50);
     await this.PMB.ingestData(new Date().toISOString(), "Sg Buloh", "TNG", "BCC9999", 3.00);
-    
-    console.log("Behaviour DB state (Anonymous vs Identified):", EDATDatabase.get(this.Behaviour.dbKey));
+    console.log("Behaviour DB state:", EDATDatabase.get(this.Behaviour.dbKey));
 
-    // 3. Dynamic Pricing Demo
-    const price = this.Pricing.calculateToll(2.50, 0.8, new Date());
-    console.log("Dynamic Pricing Output for RM 2.50 Base at 80% Congestion:", price);
+    // 3. Multi-Agent Pricing Demo
+    this.setScenario('STORM_PEAK');
+    const quote = this.Pricing.calculateQuote(2.50, 'Diesel');
+    console.log("Pricing Agent Quote (Diesel in Storm/Peak):", quote);
+
+    this.setScenario('CLEAR_NORMAL');
+    const evQuote = this.Pricing.calculateQuote(2.50, 'EV');
+    console.log("Pricing Agent Quote (EV in Clear/Normal):", evQuote);
 
     // 4. Predictive Engine
     console.log("Predictive Engine Outputs:", this.Predictive.predictOptimalTime(2.50));

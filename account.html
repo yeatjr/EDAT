@@ -7,11 +7,13 @@
   <meta name="description" content="Your personal EDAT dashboard — toll history, AI-detected routes, carbon insights and personalised suggestions."/>
   <link rel="stylesheet" href="css/style.css"/>
   <link rel="stylesheet" href="css/account.css"/>
-  <script>
-    if (!localStorage.getItem('edat_user')) {
-      window.location.replace('login.html');
-    }
-  </script>
+  
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/auth.js"></script>
 </head>
 <body class="account-body">
 
@@ -188,7 +190,6 @@
                 <th>Corridor</th>
                 <th>Hash ID</th>
                 <th>Vehicle</th>
-                <th>Emission</th>
                 <th>Toll</th>
                 <th>Status</th>
               </tr>
@@ -241,8 +242,6 @@
                 <th>Direction</th>
                 <th>Hash ID</th>
                 <th>Vehicle</th>
-                <th>Emission Idx</th>
-                <th>Confidence</th>
                 <th>Toll</th>
               </tr>
             </thead>
@@ -357,6 +356,22 @@
     </section>
 
   </main>
+</div>
+
+<!-- ── Trip Detail Modal ── -->
+<div id="trip-modal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2000; align-items:center; justify-content:center; backdrop-filter:blur(4px);">
+  <div style="background:white; width:90%; max-width:500px; border-radius:16px; overflow:hidden; box-shadow:0 25px 50px rgba(0,0,0,0.3);">
+    <div style="background:var(--navy); color:white; padding:20px; display:flex; justify-content:space-between; align-items:center;">
+      <h3 style="margin:0;">🔍 Trip Audit Log</h3>
+      <button onclick="closeTripModal()" style="background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">&times;</button>
+    </div>
+    <div id="trip-modal-content" style="padding:25px; max-height:80vh; overflow-y:auto;">
+       <!-- Injected by JS -->
+    </div>
+    <div style="padding:15px; background:var(--gray-50); border-top:1px solid var(--gray-200); text-align:right;">
+      <button onclick="closeTripModal()" class="btn btn-navy">Close Audit</button>
+    </div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>

@@ -296,10 +296,10 @@
 
     <!-- Formula -->
     <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:20px 28px;text-align:center;margin-bottom:40px;box-shadow:var(--shadow-sm);">
-      <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:10px;font-weight:700;">Dynamic Pricing Formula</div>
+      <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:10px;font-weight:700;">Dynamic Calculation Formula</div>
       <div style="font-family:var(--mono);font-size:clamp(0.9rem,2vw,1.15rem);color:var(--navy);">
-        <span style="color:var(--red);font-weight:700;">Toll</span> =
-        BaseRate × (1 + EmissionIndex × <span style="color:var(--red);">CarbonMultiplier</span>) × SpeedFactor × FairnessAdj
+        <span style="color:var(--red);font-weight:700;">Total Toll</span> = 
+        BaseRate + <span style="color:var(--red);">InfrastructureAnalyst</span>(Traffic + Weather) + <span style="color:var(--navy);">PolicyEngine</span>(ESG Policies)
       </div>
     </div>
 
@@ -307,13 +307,13 @@
       <div class="pricing-card">
         <div class="pc-icon">⚡</div>
         <div class="pc-name">Green / EV</div>
-        <div class="pc-price"><span class="pc-currency">RM</span>0.60<span style="font-size:1.1rem;font-weight:400;color:var(--text-muted);"> – 1.50</span></div>
+        <div class="pc-price"><span class="pc-currency">RM</span>0.60<span style="font-size:1.1rem;font-weight:400;color:var(--text-muted);"> – 1.20</span></div>
         <div class="pc-range">per toll transaction</div>
-        <div class="pc-mult green">Carbon Multiplier ×0.2</div>
+        <div class="pc-mult green">Eco-Efficiency Rating: Elite Green</div>
         <ul class="pc-features">
-          <li><span class="pf-icon">✓</span>Lowest emission category</li>
-          <li><span class="pf-icon">✓</span>EV Green incentive discount</li>
-          <li><span class="pf-icon">✓</span>Peak hour exemption eligible</li>
+          <li><span class="pf-icon">✓</span>Infrastructure Analyst: RM 0.00 Fee</li>
+          <li><span class="pf-icon">✓</span>Policy Engine: 100% Rebate</li>
+          <li><span class="pf-icon">✓</span>Zero Carbon Surcharge</li>
         </ul>
       </div>
 
@@ -321,13 +321,13 @@
         <div class="pc-badge">Most Common</div>
         <div class="pc-icon">🚗</div>
         <div class="pc-name">Standard / Petrol</div>
-        <div class="pc-price"><span class="pc-currency">RM</span>2.40<span style="font-size:1.1rem;font-weight:400;color:rgba(255,255,255,0.5);"> – 4.20</span></div>
+        <div class="pc-price"><span class="pc-currency">RM</span>2.40<span style="font-size:1.1rem;font-weight:400;color:rgba(255,255,255,0.5);"> – 4.00</span></div>
         <div class="pc-range" style="color:rgba(255,255,255,0.55);">per toll transaction</div>
-        <div class="pc-mult white">Carbon Multiplier ×0.8</div>
+        <div class="pc-mult white">Eco-Efficiency Rating: Balanced</div>
         <ul class="pc-features">
-          <li><span class="pf-icon">✓</span>Standard emission baseline</li>
-          <li><span class="pf-icon">✓</span>Speed-adjusted pricing</li>
-          <li><span class="pf-icon">✓</span>Behaviour scoring applied</li>
+          <li><span class="pf-icon">✓</span>Analyst: Traffic &amp; Weather</li>
+          <li><span class="pf-icon">✓</span>Legal: RAG Policy Compliant</li>
+          <li><span class="pf-icon">✓</span>Real-time Dynamic Quote</li>
         </ul>
       </div>
 
@@ -336,11 +336,11 @@
         <div class="pc-name">Heavy / Diesel</div>
         <div class="pc-price"><span class="pc-currency">RM</span>5.80<span style="font-size:1.1rem;font-weight:400;color:var(--text-muted);"> – 12.00</span></div>
         <div class="pc-range">per toll transaction</div>
-        <div class="pc-mult red">Carbon Multiplier ×2.1</div>
+        <div class="pc-mult red">Eco-Efficiency Rating: Heavy Load</div>
         <ul class="pc-features">
-          <li><span class="pf-icon">✓</span>High emission pricing factor</li>
-          <li><span class="pf-icon">✓</span>Congestion hour surcharge</li>
-          <li><span class="pf-icon">✓</span>Off-peak discounts available</li>
+          <li><span class="pf-icon">✓</span>High Road Env. Load Fee</li>
+          <li><span class="pf-icon">✓</span>Air Quality Policy Penalty</li>
+          <li><span class="pf-icon">✓</span>ESG Carbon Surcharge</li>
         </ul>
       </div>
     </div>
@@ -430,7 +430,6 @@
 <script src="js/main.js"></script>
 <script src="js/index.js"></script>
 <script src="js/dashboard.js"></script>
-<script src="js/ai-agent.js"></script>
-<script src="js/ai-agent.js"></script>
+<!-- UI Assistant Removed -->
 </body>
 </html>
