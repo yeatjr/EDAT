@@ -177,54 +177,24 @@ app.post('/api/environment/sync', async (req, res) => {
  * Master orchestration endpoint for the Multi-Agent system
  */
 app.post('/api/pricing/calculate', async (req, res) => {
-  const { baseToll, vehicleType, environment } = req.body;
+  const { baseToll, vehicleType, environment, hourOverride } = req.body;
   
   try {
-    const analyst = new AnalystAgent(dataHub);
-    const legal = new LegalAgent();
+    const { pricingFlow } = require('./agents');
 
-    // Agent 1: Analysis
-    const analystCtx = analyst.analyze(environment);
-    
-    // Agent 2: Legal Compliance
-    const legalCtx = legal.evaluatePolicy(vehicleType, analystCtx);
-
-    // Agent 3: Calculation Logic
-    const vMult = analystCtx.factors.volumeMult;
-    const wMult = analystCtx.factors.weatherMult;
-    const tMult = legalCtx.factors.effectiveTempMult;
-    const aMult = legalCtx.factors.effectiveAqiMult;
-    const rMult = legalCtx.factors.effectiveRoadMult;
-    const cMult = legalCtx.factors.carbonMult;
-
-    const proposedTotal = baseToll * vMult * wMult * tMult * aMult * rMult * cMult;
-    const enforcement = legal.enforceCaps(proposedTotal, baseToll);
-
-    const result = {
-      baseToll: baseToll,
-      finalTotal: parseFloat(enforcement.finalTotal.toFixed(2)),
-      isCapped: enforcement.capped,
-      breakdown: {
-        analyst: [
-          { factor: 'Volume/Traffic', mult: vMult, reason: analystCtx.reasons.volumeReason },
-          { factor: 'Weather (Rain)', mult: wMult, reason: analystCtx.reasons.weatherReason },
-          { factor: 'Heat Stress', mult: tMult, reason: legalCtx.reasons.effectiveTempReason },
-          { factor: 'Road Carbon Load', mult: rMult, reason: legalCtx.reasons.effectiveRoadReason }
-        ],
-        legal: [
-          { factor: 'Air Quality', mult: aMult, reason: legalCtx.reasons.effectiveAqiReason },
-          { factor: 'Vehicle Policy', mult: cMult, reason: legalCtx.reasons.carbonReason }
-        ],
-        enforcement: enforcement.reason
-      },
-      lastSync: dataHub.lastSync
-    };
+    // Run the Genkit Flow
+    const result = await pricingFlow({
+      baseToll,
+      vehicleType,
+      environment,
+      hourOverride
+    });
 
     // Use Vertex AI RAG to generate the final legal justification
     const ragJustification = await getRagJustification({
       finalTotal: result.finalTotal,
       vehicleType: vehicleType,
-      factors: analystCtx.factors
+      factors: { volumeMult: environment.occupancy, weatherMult: environment.rainfall } // Approximation for RAG
     });
     
     // Append the RAG justification to the enforcement response
@@ -240,8 +210,7 @@ app.post('/api/pricing/calculate', async (req, res) => {
             timestamp: new Date(),
             vehicleType,
             baseToll,
-            finalTotal: result.finalTotal,
-            factors: analystCtx.factors
+            finalTotal: result.finalTotal
           }
         };
         await datastore.save(entity);
@@ -250,6 +219,7 @@ app.post('/api/pricing/calculate', async (req, res) => {
       }
     }
 
+    result.lastSync = hasGCP ? new Date().toLocaleTimeString() : 'Local Mode';
     res.json(result);
   } catch (error) {
     console.error("Pricing Error:", error);

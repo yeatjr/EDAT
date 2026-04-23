@@ -4,12 +4,24 @@ document.addEventListener('DOMContentLoaded', () => {
   // Wait for Firebase Auth to initialize
   auth.onAuthStateChanged(user => {
     if (user) {
-      console.log("[ACCOUNT] User authenticated:", user.email);
+      console.log("[ACCOUNT] Firebase User authenticated:", user.email);
       initAccountPage(user);
     } else {
-      console.log("[ACCOUNT] No user found. Redirecting to login...");
-      // For demo purposes, we will allow 'ahmad_mock_123' if seeded
-      initAccountPage({ uid: 'ahmad_mock_123', displayName: 'Ahmad', email: 'ahmad@edat.ai' });
+      // Check if we are using the LocalStorage Demo Login (from login.html)
+      const localUser = localStorage.getItem('edat_user');
+      if (localUser) {
+        console.log("[ACCOUNT] LocalStorage Demo User authenticated.");
+        const parsedUser = JSON.parse(localUser);
+        // Map LocalStorage user to match Firebase user structure
+        initAccountPage({ 
+          uid: parsedUser.email || 'demo_uid', 
+          displayName: parsedUser.name, 
+          email: parsedUser.email 
+        });
+      } else {
+        console.log("[ACCOUNT] No user found. Redirecting to login...");
+        window.location.href = "login.html"; // Redirect unauthenticated users
+      }
     }
   });
 

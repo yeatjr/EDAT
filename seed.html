@@ -51,7 +51,6 @@
                 await db.collection('users').doc(mockUid).set({
                     email: "ahmad@edat.ai",
                     displayName: "Ahmad",
-                    greenTripCount: 15,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
@@ -94,15 +93,7 @@
                     });
                 }
 
-                // 3. Voucher
-                await db.collection('vouchers').add({
-                    userId: mockUid,
-                    code: "WELCOME-AHMAD",
-                    type: "Early Adopter Reward",
-                    value: "RM 5.00 Discount",
-                    status: "active",
-                    awardedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
+
 
                 updateStatus("✅ COMPLETED 20/20: Ahmad is fully synced!", "success");
             } catch (err) {

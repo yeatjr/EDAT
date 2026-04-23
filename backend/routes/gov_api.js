@@ -217,7 +217,7 @@ router.post('/toll/match-route', (req, res) => {
   for (const plaza of OFFICIAL_TOLL_RATES) {
     const isMatched = polyline.some(point => {
       const d = calculateDistance(point[0], point[1], plaza.lat, plaza.lng);
-      return d < 1.0; // 1km radius (more reliable for sparse polylines)
+      return d < 5.0; // 5.0km radius (Aggressive detection)
     });
 
     if (isMatched) {
@@ -472,8 +472,8 @@ router.get('/toll/closest', (req, res) => {
     }
   }
 
-  // Only return if it's within a reasonable radius (e.g., 15km)
-  if (closest && minDistance < 15) {
+  // Only return if it's within a reasonable radius (e.g., 80km)
+  if (closest && minDistance < 80) {
     res.json({
       found: true,
       plaza: closest.plaza,
@@ -482,7 +482,7 @@ router.get('/toll/closest', (req, res) => {
       distance_km: closest.distance_km.toFixed(2)
     });
   } else {
-    res.json({ found: false, message: 'No major toll plaza found within 15km' });
+    res.json({ found: false, message: 'No major toll plaza found within 80km' });
   }
 });
 router.get('/bus-routes', (req, res) => {

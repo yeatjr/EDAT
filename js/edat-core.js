@@ -58,15 +58,6 @@ class IdentityLayer {
     const db = EDATDatabase.get(this.dbKey);
     return db.find(u => u.hashedId === hashedId);
   }
-  
-  creditRebate(userId, amount) {
-    const db = EDATDatabase.get(this.dbKey);
-    const user = db.find(u => u.userId === userId);
-    if(user) {
-      user.walletBalance += amount;
-      EDATDatabase.set(this.dbKey, db);
-    }
-  }
 }
 
 /**
@@ -390,7 +381,10 @@ class PricingAgent {
     const environment = this.analyst.currentState;
     
     try {
-      const response = await fetch('http://localhost:3000/api/pricing/calculate', {
+      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+      const API_BASE_URL = isLocal ? 'http://localhost:3000' : 'https://edat-backend-production.up.railway.app'; // Update this with actual Cloud Run URL later
+
+      const response = await fetch(`${API_BASE_URL}/api/pricing/calculate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ baseToll, vehicleType, environment, hourOverride })
@@ -436,41 +430,6 @@ class PricingAgent {
   }
 }
 
-/**
- * 6. Rebate Calculation Engine & 8. Rebate Distribution Flow
- * Analyses behaviour and credits rebate via mapping.
- */
-class RebateEngine {
-  constructor(identityLayer, behaviourLayer) {
-    this.identity = identityLayer;
-    this.behaviour = behaviourLayer;
-  }
-
-  runMonthlyDistribution() {
-    const allIdentities = EDATDatabase.get(this.identity.dbKey);
-    
-    allIdentities.forEach(user => {
-      const trips = this.behaviour.getBehaviourByHash(user.hashedId);
-      if (trips.length === 0) return;
-
-      const offPeakTrips = trips.filter(t => !t.isPeakHour).length;
-      const offPeakRatio = offPeakTrips / trips.length;
-
-      // Logic: Assign rebate score based on off-peak usage
-      let rebateAmount = 0;
-      if (offPeakRatio > 0.8) {
-        rebateAmount = trips.length * 0.50; // RM 0.50 per trip
-      } else if (offPeakRatio > 0.5) {
-        rebateAmount = trips.length * 0.20; // RM 0.20 per trip
-      }
-
-      if (rebateAmount > 0) {
-        this.identity.creditRebate(user.userId, rebateAmount);
-        console.log(`[Rebate Engine] Distributed RM${rebateAmount.toFixed(2)} to User ${user.userId}`);
-      }
-    });
-  }
-}
 
 /**
  * 9. Predictive Recommendation Engine
@@ -553,7 +512,6 @@ class EDATSystemArchitecture {
     this.Legal = new LegalAgent();
     this.Pricing = new PricingAgent(this.Analyst, this.Legal);
     
-    this.Rebate = new RebateEngine(this.Identity, this.Behaviour);
     this.Predictive = new PredictiveRecommendationEngine(this.Pricing);
     this.Lifecycle = new DataLifecycleManager(this.PMB, this.Behaviour);
   }
@@ -587,9 +545,6 @@ class EDATSystemArchitecture {
 
     // 4. Predictive Engine
     console.log("Predictive Engine Outputs:", this.Predictive.predictOptimalTime(2.50));
-
-    // 5. Rebate Flow
-    this.Rebate.runMonthlyDistribution();
 
     // 6. Data Purge
     this.Lifecycle.runPurge();

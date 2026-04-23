@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seeding Ahmad Faris Data</title>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f0f2f5; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); text-align: center; max-width: 450px; width: 100%; }
+        h1 { color: #1a1a1a; margin-bottom: 10px; }
+        p { color: #666; margin-bottom: 30px; }
+        #status { font-weight: bold; padding: 15px; border-radius: 10px; transition: all 0.3s; }
+        .loading { background: #e8f0fe; color: #1967d2; }
+        .success { background: #e6f4ea; color: #137333; }
+        .error { background: #fce8e6; color: #c5221f; }
+        .progress-bar { width: 100%; height: 8px; background: #eee; border-radius: 4px; margin-top: 20px; overflow: hidden; display: none; }
+        .progress-fill { height: 100%; background: #1967d2; width: 0%; transition: width 0.1s; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>🚀 Seeding Journey Data</h1>
+    <p>Generating 20 journeys for <b>ahmad.faris@example.com</b></p>
+    
+    <div id="status" class="loading">Initializing Firebase...</div>
+    
+    <div class="progress-bar" id="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyD_Mtj8eJm0zKx1lx1EFx_A7e9YGoOZ_04",
+        authDomain: "edat-26e0e.firebaseapp.com",
+        projectId: "edat-26e0e",
+        storageBucket: "edat-26e0e.firebasestorage.app",
+        messagingSenderId: "765487627859",
+        appId: "1:765487627859:web:5edbf73f62435a945010a6"
+    };
+
+    async function seedData() {
+        const statusEl = document.getElementById('status');
+        const progressEl = document.getElementById('progress-fill');
+        const barEl = document.getElementById('progress-bar');
+
+        try {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            const db = firebase.firestore();
+            const targetUid = "ahmad.faris@example.com";
+            
+            statusEl.textContent = "Connecting to Firestore...";
+            barEl.style.display = 'block';
+
+            // 1. Create/Update Profile
+            await db.collection('users').doc(targetUid).set({
+                displayName: "Ahmad Faris",
+                email: "ahmad.faris@example.com",
+                vehicleType: "Petrol Car",
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+
+            // 2. Generate 20 Journeys
+            const historyRef = db.collection('users').doc(targetUid).collection('history');
+            const locations = [
+                "Skudai", "Kempas", "Senai North", "Senai South", "Kulai", "Simpang Renggam", 
+                "Machap", "Ayer Hitam", "Yong Peng North", "Yong Peng South", "Bukit Gambir",
+                "Pagoh", "Tangkat", "Jasin", "Ayer Keroh", "Simpang Ampat", "Pedas Linggi", "Seremban"
+            ];
+
+            for (let i = 0; i < 20; i++) {
+                const entry = locations[Math.floor(Math.random() * locations.length)];
+                let exit = locations[Math.floor(Math.random() * locations.length)];
+                while (exit === entry) exit = locations[Math.floor(Math.random() * locations.length)];
+
+                const base = parseFloat((Math.random() * 15 + 2).toFixed(2));
+                const traffic = Math.random() > 0.7 ? parseFloat((Math.random() * 3.5).toFixed(2)) : 0;
+                
+                const date = new Date();
+                date.setDate(date.getDate() - Math.floor(Math.random() * 30));
+                date.setHours(7 + Math.floor(Math.random() * 14), Math.floor(Math.random() * 60));
+
+                await historyRef.add({
+                    entry: entry + " (PLUS)",
+                    exit: exit + " (PLUS)",
+                    totalCharge: base + traffic,
+                    trafficFee: traffic,
+                    distance: (Math.random() * 80 + 5).toFixed(1) + " km",
+                    timestamp: firebase.firestore.Timestamp.fromDate(date)
+                });
+
+                const progress = ((i + 1) / 20) * 100;
+                progressEl.style.width = progress + '%';
+                statusEl.textContent = `Seeding Journey ${i + 1} of 20...`;
+            }
+
+            statusEl.textContent = "✅ Success! 20 Journeys Seeded.";
+            statusEl.className = "success";
+            
+            setTimeout(() => {
+                window.location.href = 'account.html';
+            }, 2000);
+
+        } catch (error) {
+            console.error(error);
+            statusEl.textContent = "❌ Error: " + error.message;
+            statusEl.className = "error";
+        }
+    }
+
+    seedData();
+</script>
+
+</body>
+</html>

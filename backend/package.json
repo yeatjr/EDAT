@@ -8,6 +8,8 @@
     "dev": "nodemon server.js"
   },
   "dependencies": {
+    "@genkit-ai/core": "^1.32.0",
+    "@genkit-ai/googleai": "^1.28.0",
     "@google-cloud/datastore": "^7.0.0",
     "@google-cloud/vertexai": "^1.0.0",
     "adm-zip": "^0.5.17",
@@ -16,6 +18,7 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "firebase-admin": "^13.8.0",
+    "genkit": "^1.32.0",
     "gtfs-realtime-bindings": "^1.1.1",
     "morgan": "^1.10.0",
     "node-cron": "^4.2.1"

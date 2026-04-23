@@ -6,31 +6,31 @@
 function initAuthListener() {
   auth.onAuthStateChanged(user => {
     const navAuth = document.getElementById('nav-auth-area');
-    if (user) {
-      console.log("[AUTH] User logged in:", user.email);
+    const localUserStr = localStorage.getItem('edat_user');
+    const localUser = localUserStr ? JSON.parse(localUserStr) : null;
+    
+    // If Firebase Auth OR LocalStorage demo auth is present
+    if (user || localUser) {
+      const displayName = user ? user.displayName : localUser.name;
+      const uid = user ? user.uid : (localUser.email || 'demo_uid');
+      
+      console.log("[AUTH] User logged in:", displayName);
       if (navAuth) {
         navAuth.innerHTML = `
           <div style="display:flex; align-items:center; gap:12px;">
-            <span style="font-size:0.85rem; font-weight:600; color:var(--navy);">👋 ${user.displayName || 'User'}</span>
+            <span style="font-size:0.85rem; font-weight:600; color:var(--navy);">👋 ${displayName || 'User'}</span>
             <button onclick="logoutUser()" class="btn btn-outline" style="padding:4px 10px; font-size:0.75rem;">Sign Out</button>
           </div>
         `;
       }
-      // Show Activity Panel
-      const activityPanel = document.getElementById('user-activity-panel');
-      if (activityPanel) activityPanel.style.display = 'block';
-
-      // Load user specific history and vouchers
-      loadUserHistory(user.uid);
-      loadUserVouchers(user.uid);
+      // Load user specific history
+      loadUserHistory(uid);
     } else {
       console.log("[AUTH] No user logged in.");
-      const activityPanel = document.getElementById('user-activity-panel');
-      if (activityPanel) activityPanel.style.display = 'none';
 
       if (navAuth) {
         navAuth.innerHTML = `
-          <button onclick="showAuthModal()" class="btn btn-red" style="padding:6px 15px; font-size:0.85rem;">Sign In</button>
+          <a href="login.html" class="btn btn-red" style="padding:6px 15px; font-size:0.85rem; text-decoration:none;">Sign In</a>
         `;
       }
     }
@@ -46,7 +46,6 @@ async function registerUser(email, password, name) {
     await db.collection('users').doc(result.user.uid).set({
       email: email,
       displayName: name,
-      greenTripCount: 0,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
     
@@ -67,65 +66,17 @@ async function loginUser(email, password) {
 }
 
 function logoutUser() {
+  localStorage.removeItem('edat_user'); // Clear Demo user if exists
   auth.signOut();
+  window.location.reload(); // Refresh the page to reflect logged out state
 }
 
-async function loadUserVouchers(uid) {
-  try {
-    const snapshot = await db.collection('vouchers').where('userId', '==', uid).get();
-    const listEl = document.getElementById('voucher-list');
-    const countEl = document.getElementById('voucher-count');
-    
-    if (listEl) {
-      listEl.innerHTML = '';
-      if (snapshot.empty) {
-        listEl.innerHTML = '<div style="font-size: 0.75rem; color: var(--text-muted); font-style: italic;">No active vouchers yet.</div>';
-      } else {
-        snapshot.forEach(doc => {
-          const v = doc.data();
-          const div = document.createElement('div');
-          div.style.cssText = 'background: #fdf2f2; border: 1px dashed #ef4444; padding: 8px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;';
-          div.innerHTML = `
-            <div>
-              <div style="font-size: 0.75rem; font-weight: 700; color: #b91c1c;">${v.code}</div>
-              <div style="font-size: 0.65rem; color: #7f1d1d;">${v.type}</div>
-            </div>
-            <div style="font-size: 0.75rem; font-weight: 800; color: #b91c1c;">${v.value}</div>
-          `;
-          listEl.appendChild(div);
-        });
-      }
-    }
-    if (countEl) countEl.textContent = snapshot.size;
-  } catch (err) {
-    console.error("Error loading vouchers:", err);
-  }
-}
 
 async function loadUserHistory(uid) {
   try {
     const snapshot = await db.collection('users').doc(uid).collection('history').orderBy('timestamp', 'desc').limit(5).get();
-    const listEl = document.getElementById('history-list');
-    const userDoc = await db.collection('users').doc(uid).get();
-    const greenCount = userDoc.data().greenTripCount || 0;
-
     if (listEl) {
       listEl.innerHTML = '';
-      
-      // Milestone Indicator
-      const milestone = document.createElement('div');
-      const progress = (greenCount % 10) * 10;
-      milestone.style.cssText = 'background: #f0fdf4; padding: 10px; border-radius: 6px; margin-bottom: 10px; border: 1px solid #bbf7d0;';
-      milestone.innerHTML = `
-        <div style="display:flex; justify-content:space-between; font-size:0.7rem; margin-bottom:5px;">
-          <span style="font-weight:700; color:#166534;">Green Milestone</span>
-          <span style="color:#166534;">${greenCount % 10}/10 trips</span>
-        </div>
-        <div style="width:100%; height:4px; background:#dcfce7; border-radius:2px; overflow:hidden;">
-          <div style="width:${progress}%; height:100%; background:#22c55e;"></div>
-        </div>
-      `;
-      listEl.appendChild(milestone);
 
       if (snapshot.empty) {
         listEl.innerHTML += '<div style="font-size: 0.75rem; color: var(--text-muted); font-style: italic;">No trips recorded yet.</div>';

@@ -18,12 +18,6 @@
         return `Your <strong>Eco-Score</strong> is a personal metric reflecting your driving habits.<br/><br/>🟢 &gt;85 — Excellent (Low carbon footprint)<br/>🟡 60–85 — Average<br/>🔴 &lt;60 — Needs Improvement<br/><br/>To improve your score, try driving off-peak or using a greener vehicle. Check your Analytics page to see your current score!`;
       }
     },
-    // Rebates
-    { tags:['rebate','earn','money','reward','cashback','off-peak','peak'],
-      reply: (ctx) => {
-        return `💸 <strong>Earn EDAT Rebates!</strong><br/><br/>You earn rebates by shifting your driving to <strong>Off-Peak hours</strong>. By reducing congestion during rush hour, we reward you directly in your dashboard.<br/><br/>Check the "Eco-Commute" chart on your Analytics page to track your off-peak driving percentage. The higher it is, the more rebates you earn!`;
-      }
-    },
     // Hash / privacy
     { tags:['hash','privacy','plate','sha','anonymous','data','identity','stored','pii','pdpa'],
       reply: () =>
@@ -32,17 +26,17 @@
     // Account / history
     { tags:['account','history','journey','trip','record','login','register','sign','analytics'],
       reply: (ctx) => {
-        return `You can use the EDAT Dashboard to track your:<br/><br/>📋 <strong>Toll Spending</strong> — weekly spending charts<br/>🗺️ <strong>Frequent Routes</strong> — see your most common trips<br/>💡 <strong>Rebates</strong> — track your total cash earned<br/>🌿 <strong>Carbon footprint</strong> — track your CO2 emissions<br/><br/>Head to the Analytics page to see your personal stats!`;
+        return `You can use the EDAT Dashboard to track your:<br/><br/>📋 <strong>Toll Spending</strong> — weekly spending charts<br/>🗺️ <strong>Frequent Routes</strong> — see your most common trips<br/>🌿 <strong>Carbon footprint</strong> — track your CO2 emissions<br/><br/>Head to the Analytics page to see your personal stats!`;
       }
     },
     // General / hello
     { tags:['hello','hi','hey','help','what','who','can you','edat','about','explain'],
       reply: () =>
-        `👋 Hi! I'm <strong>ARIA</strong> — the EDAT AI Assistant.<br/><br/>I can help you with:<br/>🔍 Calculating your toll routes<br/>💰 Learning how to earn rebates<br/>🌿 Understanding your Eco-Score<br/>🔒 How SHA-256 privacy works<br/><br/>What would you like to know? Just ask in plain language!`
+        `👋 Hi! I'm <strong>ARIA</strong> — the EDAT AI Assistant.<br/><br/>I can help you with:<br/>🔍 Calculating your toll routes<br/>🌿 Understanding your Eco-Score<br/>🔒 How SHA-256 privacy works<br/><br/>What would you like to know? Just ask in plain language!`
     },
   ];
 
-  const FALLBACK = `I'm not sure about that specific question yet! 🤔<br/><br/>Try asking me about:<br/>• Routing and calculating tolls<br/>• Earning rebates for off-peak driving<br/>• Your Eco-Score and emissions<br/>• Privacy and security`;
+  const FALLBACK = `I'm not sure about that specific question yet! 🤔<br/><br/>Try asking me about:<br/>• Routing and calculating tolls<br/>• Your Eco-Score and emissions<br/>• Privacy and security`;
 
   // ── Context ──────────────────────────────────────────────────────────
   function getContext() {
@@ -71,7 +65,6 @@
   // ── Suggested questions ───────────────────────────────────────────────
   const QUICK_QUESTIONS = [
     'How do I calculate a route?',
-    'How can I earn rebates?',
     'What is my Eco-Score?',
     'Is my privacy protected?',
     'Show me my Analytics',

@@ -47,6 +47,12 @@ function resetCalcButton() {
   }
 }
 
+let isSidebarOpen = true;
+
+// Define Base URL for API calls to switch between local and Cloud Run
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+const API_BASE_URL = isLocal ? 'http://localhost:3000' : 'https://edat-backend-production.up.railway.app'; // Replace with Cloud Run URL
+
 function initMap() {
   const mapContainer = document.getElementById('edat-map');
   if (!mapContainer) return;
@@ -57,10 +63,10 @@ function initMap() {
 
   L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-  L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
     maxZoom: 20,
-    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-    attribution: '&copy; Google Maps'
+    subdomains: 'abcd',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
   }).addTo(map);
 
   // Handle Map Clicks to set locations
@@ -184,7 +190,7 @@ async function detectClosestToll(latlng, type) {
   if (!label) return;
 
   try {
-    const res = await fetch(`http://localhost:3000/api/gov/toll/closest?lat=${latlng.lat}&lng=${latlng.lng}`);
+    const res = await fetch(`${API_BASE_URL}/api/gov/toll/closest?lat=${latlng.lat}&lng=${latlng.lng}`);
     const data = await res.json();
     if (data.found) {
       label.textContent = `📍 ${type === 'start' ? 'Entry' : 'Exit'}: ${data.plaza} (${data.distance_km}km away)`;
@@ -284,7 +290,7 @@ function fetchAndRenderRoute() {
 
   Promise.all([
     fetch(osrmUrl).then(r => r.json()),
-    fetch('http://localhost:3000/api/routing/google-tolls', {
+    fetch(`${API_BASE_URL}/api/routing/google-tolls`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -306,16 +312,7 @@ function fetchAndRenderRoute() {
     const transit = googleData.transit || {};
 
     // 1. Detect Nearest Toll / Highway Entry
-    const tollDetector = document.getElementById('res-toll-detector');
-    if (tollDetector) {
-      if (drive.travelAdvisory && drive.travelAdvisory.tollInfo) {
-        tollDetector.innerHTML = `🛣️ <strong>Detected:</strong> PLUS Expressway Toll Entry Point`;
-        tollDetector.style.color = "#1e40af";
-      } else {
-        tollDetector.textContent = "✅ No Tolls detected on this route.";
-        tollDetector.style.color = "#10b981";
-      }
-    }
+    // (Detailed detection is handled later in renderRoute via aiContext.crossedPlazas)
 
     // 2. Determine Distance & Duration
     // Use OSRM as primary for map consistency, but override with Google if real
@@ -365,7 +362,7 @@ function fetchAndRenderRoute() {
     // Try Route Polyline Scanning (Best Accuracy for middle tolls)
     if (geojson && geojson.coordinates) {
       try {
-        const scannerRes = await fetch('http://localhost:3000/api/gov/toll/match-route', {
+        const scannerRes = await fetch(`${API_BASE_URL}/api/gov/toll/match-route`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ polyline: geojson.coordinates.map(c => [c[1], c[0]]) }) // [lat, lng]
@@ -391,6 +388,33 @@ function fetchAndRenderRoute() {
       tollSource = `LLM Verified (${crossedPlazas.length} Plazas)`;
     }
 
+    // --- NEW: Smart Heuristic (Match Highway Names in OSRM Summary) ---
+    if (baseToll === 0 && route.summary) {
+      const summary = route.summary.toUpperCase();
+      // Common Malaysian Highway Codes and Names
+      const highwayKeywords = ["LEBUHRAYA", "EXPRESSWAY", "HIGHWAY", "BRIDGE", "TUNNEL", "PLUS", "LDP", "MEX", "KESAS", "DUKE", "SPRINT", "AKLEH", "SMART"];
+      const hasHighwayKeyword = highwayKeywords.some(k => summary.includes(k)) || /E\d+/.test(summary);
+
+      if (hasHighwayKeyword) {
+        // Try to match specific highway codes (e.g. E1, E2) or names
+        const bestMatch = OFFICIAL_TOLL_RATES.find(p => 
+          summary.includes(p.highway) || 
+          summary.includes(p.plaza.toUpperCase().split(' ')[0])
+        );
+
+        if (bestMatch) {
+          baseToll = bestMatch.rate;
+          tollSource = `AI Context: ${bestMatch.highway} Detected`;
+          crossedPlazas.push({ 
+            name: `Predicted ${bestMatch.highway} Toll`, 
+            rate: bestMatch.rate, 
+            highway: bestMatch.highway,
+            isHeuristic: true 
+          });
+        }
+      }
+    }
+
     // Fallback ONLY to Google Toll Info (if they have data we missed)
     if (baseToll === 0 && drive.travelAdvisory && drive.travelAdvisory.tollInfo) {
       const priceList = drive.travelAdvisory.tollInfo.estimatedPrice;
@@ -411,7 +435,7 @@ function fetchAndRenderRoute() {
     // Try Government GTFS fare first
     try {
       const isJohor = destination.lat < 2.0; // Simple lat check for Johor area
-      const govFareUrl = isJohor ? 'http://localhost:3000/api/gov/bus-fare?agency=johor' : 'http://localhost:3000/api/gov/bus-fare';
+      const govFareUrl = isJohor ? `${API_BASE_URL}/api/gov/bus-fare?agency=johor` : `${API_BASE_URL}/api/gov/bus-fare`;
       const govFareRes = await fetch(govFareUrl);
       const govFareData = await govFareRes.json();
       
@@ -512,7 +536,28 @@ async function renderRoute(geojson, distKm, baseDurationSecs, vClass, baseToll, 
   // Highlight the Toll Source
   const baseLabel = document.querySelector('span[id="res-base"]').previousElementSibling;
   if (baseLabel) {
-    baseLabel.innerHTML = `<span style="color:#3b82f6;">●</span> Base Toll (${aiContext.tollSource})`;
+    baseLabel.innerHTML = `<span style="color:#3b82f6;">●</span> Base Toll (${aiContext.tollSource || 'Estimated'})`;
+  }
+
+  // --- RESTORED: Update Plaza list in UI ---
+  const detectorPanel = document.getElementById('res-toll-detector');
+  if (detectorPanel) {
+    if (aiContext.crossedPlazas && aiContext.crossedPlazas.length > 0) {
+      detectorPanel.innerHTML = `
+        <div style="font-weight:bold; margin-bottom: 5px; color: #10b981; font-size: 0.8rem;">✅ Verified Toll Crossings:</div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          ${aiContext.crossedPlazas.map(p => `<div style="font-size: 0.75rem; color: #374151;">🛣️ ${p.name}: <b>RM ${p.rate.toFixed(2)}</b></div>`).join('')}
+        </div>
+      `;
+      detectorPanel.style.background = "#f0fdf4";
+      detectorPanel.style.borderLeft = "3px solid #10b981";
+      detectorPanel.style.padding = "10px";
+      detectorPanel.style.borderRadius = "4px";
+    } else {
+      detectorPanel.innerHTML = `<div style="font-size: 0.75rem; color: #64748b;">✅ No Tolls detected on this route.</div>`;
+      detectorPanel.style.background = "#f8fafc";
+      detectorPanel.style.borderLeft = "3px solid #e2e8f0";
+    }
   }
 
     // --- RESTORED: Detailed Multi-Agent Pricing Breakdown ---
@@ -638,9 +683,6 @@ async function renderRoute(geojson, distKm, baseDurationSecs, vClass, baseToll, 
         estChip.innerHTML = `<span>🚌</span> <span>Express Bus / Intercity</span>`;
         stepsContainer.appendChild(estChip);
       }
-    }
-
-
     }
 
     // --- NEW: Trip History & Automatic Voucher Logic (Firebase Version) ---
@@ -813,7 +855,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btnSync.addEventListener('click', async () => {
         btnSync.textContent = "Syncing MET Malaysia...";
         try {
-          const res = await fetch('http://localhost:3000/api/environment/sync', { method: 'POST' });
+          const res = await fetch(`${API_BASE_URL}/api/environment/sync`, { method: 'POST' });
           const data = await res.json();
           
           // Update local state with live MET Malaysia data
