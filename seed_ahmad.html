@@ -86,12 +86,16 @@
                 date.setDate(date.getDate() - Math.floor(Math.random() * 30));
                 date.setHours(7 + Math.floor(Math.random() * 14), Math.floor(Math.random() * 60));
 
+                const distanceKm = parseFloat((Math.random() * 80 + 5).toFixed(1));
+                const co2Kg = parseFloat((distanceKm * 0.192).toFixed(2)); // Standard petrol emission factor
+
                 await historyRef.add({
                     entry: entry + " (PLUS)",
                     exit: exit + " (PLUS)",
                     totalCharge: base + traffic,
                     trafficFee: traffic,
-                    distance: (Math.random() * 80 + 5).toFixed(1) + " km",
+                    distance: distanceKm + " km",
+                    co2: co2Kg,
                     timestamp: firebase.firestore.Timestamp.fromDate(date)
                 });
 

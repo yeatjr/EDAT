@@ -13,10 +13,10 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("[ACCOUNT] LocalStorage Demo User authenticated.");
         const parsedUser = JSON.parse(localUser);
         // Map LocalStorage user to match Firebase user structure
-        initAccountPage({ 
-          uid: parsedUser.email || 'demo_uid', 
-          displayName: parsedUser.name, 
-          email: parsedUser.email 
+        initAccountPage({
+          uid: parsedUser.email || 'demo_uid',
+          displayName: parsedUser.name,
+          email: parsedUser.email
         });
       } else {
         console.log("[ACCOUNT] No user found. Redirecting to login...");
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function initAccountPage(user) {
   await loadUserProfile(user);
   const journeys = await fetchUserJourneys(user.uid);
-  
+
   renderOverview(user, journeys);
   renderHistory(journeys);
   // renderRoutes(journeys); // Keep original pattern detection
@@ -47,9 +47,10 @@ async function loadUserProfile(user) {
   try {
     const doc = await db.collection('users').doc(user.uid).get();
     const data = doc.exists ? doc.data() : { displayName: user.displayName, email: user.email };
-    
-    const initials = (data.displayName || 'U').split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
-    
+    currentUser = data; // Store for suggestions
+
+    const initials = (data.displayName || 'U').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+
     document.getElementById('user-avatar').textContent = initials;
     document.getElementById('user-name-nav').textContent = data.displayName.split(' ')[0];
     document.getElementById('ud-name').textContent = data.displayName;
@@ -58,7 +59,7 @@ async function loadUserProfile(user) {
     document.getElementById('sidebar-name').textContent = data.displayName;
     document.getElementById('sidebar-email').textContent = data.email;
     document.getElementById('welcome-name').textContent = data.displayName.split(' ')[0];
-    
+
     // Settings form
     const sn = document.getElementById('set-name'); if (sn) sn.value = data.displayName;
     const se = document.getElementById('set-email'); if (se) se.value = data.email;
@@ -71,7 +72,7 @@ async function fetchUserJourneys(uid) {
   try {
     console.log("[FIREBASE] Fetching history for UID:", uid);
     const snapshot = await db.collection('users').doc(uid).collection('history').get();
-    
+
     console.log("[FIREBASE] Found documents:", snapshot.size);
 
     const corridors = ["PLUS Highway", "LDP Highway", "MEX Highway", "KESAS", "SPRINT"];
@@ -81,7 +82,7 @@ async function fetchUserJourneys(uid) {
       const d = doc.data();
       const corr = corridors[index % corridors.length];
       const dir = directions[index % directions.length];
-      
+
       // Breakdown logic...
       const baseToll = (d.totalCharge * 0.7).toFixed(2);
       const remaining = d.totalCharge - parseFloat(baseToll);
@@ -98,10 +99,10 @@ async function fetchUserJourneys(uid) {
         // Ensure we have a date even if timestamp is missing
         rawDate: d.timestamp ? d.timestamp.toDate() : new Date(),
         date: d.timestamp ? new Date(d.timestamp.toDate()).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
-        time: d.timestamp ? new Date(d.timestamp.toDate()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '--:--',
+        time: d.timestamp ? new Date(d.timestamp.toDate()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--',
         corridor: corr,
         direction: d.entry + " → " + d.exit + " (" + dir + ")",
-        hash: 'EDAT-' + doc.id.slice(0,6).toUpperCase(),
+        hash: 'EDAT-' + doc.id.slice(0, 6).toUpperCase(),
         vehicle: "Petrol Car",
         toll: d.totalCharge || 0,
         emission: 0.85, // Added back for charts
@@ -158,7 +159,7 @@ function initSidebarNav() {
 
 /* ── User dropdown ── */
 function initUserDropdown() {
-  const pill     = document.getElementById('user-pill');
+  const pill = document.getElementById('user-pill');
   const dropdown = document.getElementById('user-dropdown');
   pill?.addEventListener('click', e => {
     e.stopPropagation();
@@ -186,16 +187,16 @@ function initLogout() {
 function renderOverview(user, journeys) {
   if (!journeys || !journeys.length) return;
 
-  const total    = journeys.reduce((a,j) => a + (j.toll || 0), 0);
-  const co2      = journeys.length * 4.2; // Mocked carbon per trip
-  const avgConf  = 98.5;
-  const savings  = journeys.length * 0.85;
+  const total = journeys.reduce((a, j) => a + (j.toll || 0), 0);
+  const co2 = journeys.length * 4.2; // Mocked carbon per trip
+  const avgConf = 98.5;
+  const savings = journeys.length * 0.85;
 
   const kpis = [
-    { icon:'💰', val:`RM ${total.toFixed(2)}`, label:'Total Tolls Paid', delta:'↑ Updated live', cls:'', deltaCls:'pos' },
-    { icon:'🌿', val:`${co2.toFixed(1)} kg`, label:'CO₂ Generated', delta:'vs national avg', cls:'amber', deltaCls:'' },
-    { icon:'🤖', val:`${avgConf.toFixed(1)}%`, label:'Avg AI Confidence', delta:'Above 85% threshold ✓', cls:'green', deltaCls:'pos' },
-    { icon:'💡', val:`RM ${savings.toFixed(2)}`, label:'Estimated AI Savings', delta:'vs flat-rate pricing', cls:'green', deltaCls:'pos' },
+    { icon: '💰', val: `RM ${total.toFixed(2)}`, label: 'Total Tolls Paid', delta: '↑ Updated live', cls: '', deltaCls: 'pos' },
+    { icon: '🌿', val: `${co2.toFixed(1)} kg`, label: 'CO₂ Generated', delta: 'vs national avg', cls: 'amber', deltaCls: '' },
+    { icon: '🤖', val: `${avgConf.toFixed(1)}%`, label: 'Avg AI Confidence', delta: 'Above 85% threshold ✓', cls: 'green', deltaCls: 'pos' },
+    { icon: '💡', val: `RM ${savings.toFixed(2)}`, label: 'Estimated AI Savings', delta: 'vs flat-rate pricing', cls: 'green', deltaCls: 'pos' },
   ];
 
   const grid = document.getElementById('ov-kpi-grid');
@@ -211,17 +212,17 @@ function renderOverview(user, journeys) {
   }
 
   // Quick Stats Row
-  setText('qs-total',    `RM ${total.toFixed(2)}`);
+  setText('qs-total', `RM ${total.toFixed(2)}`);
   setText('qs-journeys', journeys.length);
-  setText('qs-co2',      `${co2.toFixed(1)} kg`);
-  setText('qs-conf',     `${avgConf.toFixed(1)}%`);
+  setText('qs-co2', `${co2.toFixed(1)} kg`);
+  setText('qs-conf', `${avgConf.toFixed(1)}%`);
 
   // AI insight
-  const insightText = `EDAT AI detected your recent ${journeys.length} journeys. Your average toll is RM ${(total/journeys.length).toFixed(2)}. Consider off-peak travel to save more!`;
+  const insightText = `EDAT AI detected your recent ${journeys.length} journeys. Your average toll is RM ${(total / journeys.length).toFixed(2)}. Consider off-peak travel to save more!`;
   setText('aib-text', insightText);
 
   // Recent journeys table (last 10)
-  renderJourneyRows('recent-tbody', journeys.slice(0,10), true);
+  renderJourneyRows('recent-tbody', journeys.slice(0, 10), true);
 
   // Charts
   renderWeeklyChart(journeys);
@@ -233,7 +234,7 @@ function renderHistory(journeys) {
   renderJourneyRows('history-tbody', journeys, false);
 
   // Filter (Simplified for now)
-  document.getElementById('hist-filter')?.addEventListener('change', function() {
+  document.getElementById('hist-filter')?.addEventListener('change', function () {
     const val = this.value;
     const filtered = val === 'all' ? journeys : journeys.filter(j => j.corridor === val);
     renderJourneyRows('history-tbody', filtered, false);
@@ -245,7 +246,7 @@ function renderJourneyRows(tbodyId, journeys, compact) {
   if (!tbody) return;
 
   tbody.innerHTML = journeys.map(j => {
-    const badge   = j.isRoutine
+    const badge = j.isRoutine
       ? `<span class="badge-routine">🗓 Routine</span>`
       : `<span class="badge-single">Single</span>`;
 
@@ -310,7 +311,7 @@ function renderRoutes() {
         </div>
         <div style="margin-bottom:12px;font-size:0.78rem;color:var(--text-muted);">Active Days:</div>
         <div class="rc-days">
-          ${['M','T','W','T','F','S','S'].map((d,i) => `
+          ${['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => `
             <div class="rc-day ${p.days[i] ? 'active' : ''}">${d}</div>
           `).join('')}
         </div>
@@ -334,20 +335,20 @@ function detectPatterns(journeys) {
   const patterns = [];
   Object.entries(byCorr).forEach(([corridor, trips]) => {
     if (trips.length < 3) return;
-    const avgToll     = (trips.reduce((a,t) => a + t.toll, 0) / trips.length).toFixed(2);
-    const avgEmission = (trips.reduce((a,t) => a + t.emission, 0) / trips.length).toFixed(3);
-    const hours       = trips.map(t => parseInt(t.time.split(':')[0]));
-    const avgHour     = Math.round(hours.reduce((a,h) => a + h, 0) / hours.length);
-    const timePeriod  = avgHour < 10 ? 'Morning Rush' : avgHour < 14 ? 'Midday' : avgHour < 18 ? 'Afternoon' : 'Evening Rush';
+    const avgToll = (trips.reduce((a, t) => a + t.toll, 0) / trips.length).toFixed(2);
+    const avgEmission = (trips.reduce((a, t) => a + t.emission, 0) / trips.length).toFixed(3);
+    const hours = trips.map(t => parseInt(t.time.split(':')[0]));
+    const avgHour = Math.round(hours.reduce((a, h) => a + h, 0) / hours.length);
+    const timePeriod = avgHour < 10 ? 'Morning Rush' : avgHour < 14 ? 'Midday' : avgHour < 18 ? 'Afternoon' : 'Evening Rush';
 
     // Detect weekdays
-    const days = [false,false,false,false,false,false,false];
+    const days = [false, false, false, false, false, false, false];
     trips.forEach(t => { const d = new Date(t.date).getDay(); days[d === 0 ? 6 : d - 1] = true; });
 
     // Name the route
-    const isAM    = avgHour < 12;
-    const name    = isAM ? `Morning Commute` : `Return Commute`;
-    const weekdays = days.slice(0,5).filter(Boolean).length;
+    const isAM = avgHour < 12;
+    const name = isAM ? `Morning Commute` : `Return Commute`;
+    const weekdays = days.slice(0, 5).filter(Boolean).length;
 
     patterns.push({
       name, corridor, avgToll, avgEmission, count: trips.length,
@@ -363,10 +364,10 @@ function detectPatterns(journeys) {
 
 /* ── Suggestions ── */
 function renderSuggestions() {
-  const u        = getUser();
+  const u = getUser();
   const journeys = getJourneys();
-  const vehicle  = u?.vehicle || 'Petrol Car';
-  const avgToll  = journeys.length ? journeys.reduce((a,j) => a + j.toll, 0) / journeys.length : 3;
+  const vehicle = u?.vehicle || 'Petrol Car';
+  const avgToll = journeys.length ? journeys.reduce((a, j) => a + j.toll, 0) / journeys.length : 3;
 
   const suggestions = buildSuggestions(vehicle, avgToll, journeys);
   const list = document.getElementById('suggestions-list');
@@ -394,57 +395,46 @@ function renderSuggestions() {
 
 function buildSuggestions(vehicle, avgToll, journeys) {
   const suggs = [];
-  const isEV  = vehicle === 'EV';
-  const monthlySavingEV = (avgToll * journeys.length * 0.6).toFixed(0);
+  const isEV = vehicle === 'EV';
+  const monthlySavingEV = (avgToll * journeys.length * 0.4).toFixed(0); // 0.6x multiplier savings
 
   if (!isEV) {
     suggs.push({
       icon: '⚡', iconBg: 'rgba(0,184,148,0.1)',
-      title: 'Switch to an Electric Vehicle',
-      desc: `Based on your ${journeys.length} journeys, switching to an EV would qualify you for the ×0.2 carbon multiplier instead of ×0.8–2.1. You would save significantly on every toll.`,
+      title: 'Upgrade to Electric Vehicle (EV)',
+      desc: `Based on your recent ${journeys.length} journeys, converting to an EV would qualify you for the exclusive 0.6× carbon multiplier. This directly slashes your toll expenses by 40% every month.`,
       impact: `RM ${monthlySavingEV}/month`, impactIcon: '💰', impactDesc: 'estimated toll saving',
-      priority: 'High', priorityCls: 'pri-high', cta: 'Learn More',
-      action: `alert('EV incentive: Apply at myev.gov.my to register your EV and unlock the 0.2× carbon multiplier on all EDAT corridors.')`
+      priority: 'High', priorityCls: 'pri-high', cta: 'View EV Incentives',
+      action: `alert('National EV Policy: Zero road tax and up to RM 2,500 tax relief for charging facilities. Apply at myev.gov.my to unlock the 0.6× EDAT multiplier.')`
     });
   }
+
+  suggs.push({
+    icon: '🚆', iconBg: 'rgba(59, 130, 246, 0.1)',
+    title: 'Switch to Public Transport',
+    desc: `Your commute corridor is well-served by the Prasarana rail network. Using the LRT/MRT twice a week could reduce your monthly toll and fuel expenditure by up to 35%.`,
+    impact: '35% Savings', impactIcon: '📉', impactDesc: 'vs personal driving',
+    priority: 'Medium', priorityCls: 'pri-medium', cta: 'Plan Transit Route',
+    action: `window.location.href = 'dashboard.html?mode=transit'`
+  });
+
+  suggs.push({
+    icon: '🤖', iconBg: 'rgba(214, 48, 49, 0.1)',
+    title: 'Ask ARIA for Optimisation',
+    desc: `Need a custom travel plan? Our ARIA AI Assistant can analyze your specific routes and suggest the best departure windows to hit the lowest dynamic rates.`,
+    impact: 'AI Optimised', impactIcon: '✨', impactDesc: 'personalised strategy',
+    priority: 'High', priorityCls: 'pri-high', cta: 'Chat with ARIA',
+    action: `document.getElementById('aria-fab')?.click()`
+  });
 
   suggs.push({
     icon: '⏰', iconBg: 'rgba(245,158,11,0.1)',
-    title: 'Travel 20 Minutes Earlier',
-    desc: `EDAT detected you typically travel during peak hours (07:30–09:00). Shifting your departure 20 minutes earlier reduces your speed factor from ×1.3 to ×0.95, saving per toll.`,
-    impact: `RM ${(avgToll * 0.18).toFixed(2)} per journey`, impactIcon: '📉', impactDesc: 'speed factor reduction',
+    title: 'Peak-Hour Shift (20m Earlier)',
+    desc: `You frequently hit the 1.7× peak multiplier. Shifting your departure 20 minutes earlier often results in a 1.15× or 1.0× multiplier, saving significantly over a month.`,
+    impact: `RM ${(avgToll * 0.4).toFixed(2)} / trip`, impactIcon: '📉', impactDesc: 'avoiding 1.7x peak',
     priority: 'High', priorityCls: 'pri-high', cta: 'Set Reminder',
-    action: `alert('Reminder set for 07:10 on Mon–Fri commute days.')`
+    action: `alert('Reminder set: We will notify you 20 minutes before your usual peak commute window.')`
   });
-
-  suggs.push({
-    icon: '🛣️', iconBg: 'rgba(27,42,74,0.08)',
-    title: 'Combine Errands on Off-Peak Days',
-    desc: `Your Saturday journeys average RM ${(avgToll * 0.8).toFixed(2)} — 22% cheaper than weekday commutes. Consider running errands on Saturday mornings instead of weekday evenings.`,
-    impact: '22% cheaper', impactIcon: '📊', impactDesc: 'off-peak vs peak pricing',
-    priority: 'Medium', priorityCls: 'pri-medium', cta: 'See Route Stats',
-    action: `document.querySelector('.as-nav-item[data-section="routes"]')?.click()`
-  });
-
-  if (vehicle === 'Motorcycle') {
-    suggs.push({
-      icon: '🏛️', iconBg: 'rgba(0,184,148,0.08)',
-      title: 'Check B40 Motorcycle Exemption',
-      desc: `Registered B40 motorcycles receive a permanent 50% reduction on all EDAT base rates. If your household income qualifies, register at the LHDN portal.`,
-      impact: '50% off base rate', impactIcon: '🛡️', impactDesc: 'permanent discount',
-      priority: 'High', priorityCls: 'pri-high', cta: 'Check Eligibility',
-      action: `alert('Visit LHDN B40 portal: lhdn.gov.my/b40 to register your motorcycle for the EDAT exemption programme.')`
-    });
-  } else {
-    suggs.push({
-      icon: '🌳', iconBg: 'rgba(0,184,148,0.08)',
-      title: 'Carbon Offset Programme',
-      desc: `Your journeys generate approximately ${(journeys.reduce((a,j) => a + j.emission * 12, 0)).toFixed(0)} kg CO₂ per period. Offset this via MyCarbon Credits at a subsidised government rate.`,
-      impact: 'Carbon Neutral', impactIcon: '🌿', impactDesc: 'offset your footprint',
-      priority: 'Low', priorityCls: 'pri-low', cta: 'Offset Now',
-      action: `alert('MyCarbon Credits portal: mycarbon.gov.my — offset your EDAT emissions at RM 8/tonne CO₂.')`
-    });
-  }
 
   return suggs;
 }
@@ -454,8 +444,8 @@ function initSettings() {
   document.getElementById('btn-save-profile')?.addEventListener('click', () => {
     const u = getUser();
     if (!u) return;
-    u.name    = document.getElementById('set-name')?.value?.trim() || u.name;
-    u.email   = document.getElementById('set-email')?.value?.trim() || u.email;
+    u.name = document.getElementById('set-name')?.value?.trim() || u.name;
+    u.email = document.getElementById('set-email')?.value?.trim() || u.email;
     u.vehicle = document.getElementById('set-vehicle')?.value || u.vehicle;
     localStorage.setItem('edat_user', JSON.stringify(u));
     loadUser();
@@ -469,22 +459,22 @@ function initSettings() {
 
 /* ── Export ── */
 function initExport() {
-  ['btn-export-acc','btn-export-hist'].forEach(id => {
+  ['btn-export-acc', 'btn-export-hist'].forEach(id => {
     document.getElementById(id)?.addEventListener('click', exportCSV);
   });
 }
 
 function exportCSV() {
   const journeys = getJourneys();
-  const rows = [['Date','Time','Corridor','Direction','Hash','Vehicle','Emission','Confidence','Toll (RM)']];
+  const rows = [['Date', 'Time', 'Corridor', 'Direction', 'Hash', 'Vehicle', 'Emission', 'Confidence', 'Toll (RM)']];
   journeys.forEach(j => rows.push([
     j.date, j.time, j.corridor, j.direction, j.hash, j.vehicle, j.emission, j.confidence, j.toll
   ]));
-  const csv  = rows.map(r => r.join(',')).join('\n');
-  const blob = new Blob([csv], {type:'text/csv'});
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url; a.download = `edat-journeys-${new Date().toISOString().slice(0,10)}.csv`;
+  const csv = rows.map(r => r.join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `edat-journeys-${new Date().toISOString().slice(0, 10)}.csv`;
   a.click(); URL.revokeObjectURL(url);
 }
 
@@ -506,22 +496,24 @@ function renderWeeklyChart(journeys) {
   const last7 = [];
   for (let i = 6; i >= 0; i--) {
     const d = new Date(); d.setDate(d.getDate() - i);
-    const ds = d.toISOString().slice(0,10);
+    const ds = d.toISOString().slice(0, 10);
     const dayj = journeys.filter(j => j.date === ds);
     last7.push({
-      label: d.toLocaleDateString('en-MY',{weekday:'short'}),
-      total: dayj.reduce((a,j) => a + j.toll, 0)
+      label: d.toLocaleDateString('en-MY', { weekday: 'short' }),
+      total: dayj.reduce((a, j) => a + j.toll, 0)
     });
   }
 
   new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: last7.map(d=>d.label),
-      datasets: [{ label:'Toll (RM)', data: last7.map(d=>d.total.toFixed(2)),
-        backgroundColor: 'rgba(214,48,49,0.8)', borderRadius: 6, borderSkipped: false }]
+      labels: last7.map(d => d.label),
+      datasets: [{
+        label: 'Toll (RM)', data: last7.map(d => d.total.toFixed(2)),
+        backgroundColor: 'rgba(214,48,49,0.8)', borderRadius: 6, borderSkipped: false
+      }]
     },
-    options: chartOpts({ yLabel:'RM' })
+    options: chartOpts({ yLabel: 'RM' })
   });
 }
 
@@ -529,38 +521,48 @@ function renderEmissionTrendChart(journeys) {
   const ctx = document.getElementById('chart-emission-trend');
   if (!ctx) return;
 
-  const sorted = [...journeys].sort((a,b) => a.rawDate - b.rawDate).slice(-14);
+  const sorted = [...journeys].sort((a, b) => a.rawDate - b.rawDate).slice(-14);
   new Chart(ctx, {
     type: 'line',
     data: {
       labels: sorted.map(j => j.date.slice(5)),
-      datasets: [{ label:'Emission Index', data: sorted.map(j => (j.emission || 0).toFixed(3)),
+      datasets: [{
+        label: 'Emission Index', data: sorted.map(j => (j.emission || 0).toFixed(3)),
         borderColor: '#F59E0B', backgroundColor: 'rgba(245,158,11,0.08)',
-        fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: '#F59E0B' }]
+        fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: '#F59E0B'
+      }]
     },
-    options: chartOpts({ yLabel:'Emission Idx', suggestedMax: 1.5 })
+    options: chartOpts({ yLabel: 'Emission Idx', suggestedMax: 1.5 })
   });
 }
 
-function chartOpts(extra={}) {
+function chartOpts(extra = {}) {
   return {
-    responsive: true, plugins: { legend:{ display:false } },
+    responsive: true, plugins: { legend: { display: false } },
     scales: {
-      y: { beginAtZero:true, grid:{ color:'rgba(0,0,0,0.04)' }, ticks:{ color:'#9CA3AF', font:{size:11} }, ...(extra.suggestedMax ? {suggestedMax:extra.suggestedMax} : {}) },
-      x: { grid:{ display:false }, ticks:{ color:'#9CA3AF', font:{size:11} } }
+      y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { color: '#9CA3AF', font: { size: 11 } }, ...(extra.suggestedMax ? { suggestedMax: extra.suggestedMax } : {}) },
+      x: { grid: { display: false }, ticks: { color: '#9CA3AF', font: { size: 11 } } }
     }
   };
 }
 
-// Global store for journeys to help modal lookup
+// Global store for journeys and user to help modal/suggestion lookup
 let currentJourneys = [];
+let currentUser = null;
+
+function getUser() { 
+  if (currentUser) return currentUser;
+  try { return JSON.parse(localStorage.getItem('edat_user')); } catch { return null; }
+}
+function getJourneys() { return currentJourneys; }
 
 async function initAccountPage(user) {
   await loadUserProfile(user);
   currentJourneys = await fetchUserJourneys(user.uid);
-  
+
   renderOverview(user, currentJourneys);
   renderHistory(currentJourneys);
+  renderSuggestions();
 }
 
 /* ── Modal logic ── */
@@ -607,7 +609,6 @@ function showTripDetails(trip) {
 
       <div style="width:100%; height:1px; background:var(--gray-200); margin:15px 0;"></div>
 
-      <div style="font-size:0.75rem; font-weight:800; color:var(--navy); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;">Policy Compliance (RAG)</div>
       <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:8px;">
         <span>Air Quality</span>
         <span>RM ${b.airQuality}</span>
@@ -634,11 +635,11 @@ function closeTripModal() {
 
 /* ── Shared utils ── */
 function vehicleEmoji(v) {
-  return { 'EV':'⚡', 'Hybrid':'🔋', 'Petrol Car':'🚗', 'Diesel':'🛻', 'Motorcycle':'🏍️', 'Truck':'🚛' }[v] || '🚗';
+  return { 'EV': '⚡', 'Hybrid': '🔋', 'Petrol Car': '🚗', 'Diesel': '🛻', 'Motorcycle': '🏍️', 'Truck': '🚛' }[v] || '🚗';
 }
 function formatDate(d) {
   const date = new Date(d + 'T00:00:00');
-  return date.toLocaleDateString('en-MY', {day:'2-digit', month:'short'});
+  return date.toLocaleDateString('en-MY', { day: '2-digit', month: 'short' });
 }
 function setText(id, val) {
   const el = document.getElementById(id);

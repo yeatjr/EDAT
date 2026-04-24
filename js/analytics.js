@@ -39,8 +39,8 @@ async function initAnalytics(uid) {
 
 function renderKPIs(journeys) {
   const totalToll = journeys.reduce((a,j) => a + (j.totalCharge || 0), 0);
-  const totalDist = journeys.length * 42; // Mock avg dist for ESG
-  const totalCO2  = (journeys.length * 4.2).toFixed(1);
+  const totalDist = journeys.reduce((a,j) => a + parseFloat(j.distance || 0), 0);
+  const totalCO2  = journeys.reduce((a,j) => a + (j.co2 || 0), 0).toFixed(1);
   const ecoTrips  = journeys.filter(j => parseFloat(j.trafficFee) <= 1).length;
   const ecoScore  = Math.round((ecoTrips / journeys.length) * 100);
 
@@ -88,7 +88,7 @@ function renderCarbonTrend(journeys) {
   journeys.forEach(j => {
     if (!j.timestamp) return;
     const ds = j.timestamp.toDate().toISOString().slice(5,10);
-    if (spendMap[ds] !== undefined) spendMap[ds] += 4.2; // 4.2kg avg
+    if (spendMap[ds] !== undefined) spendMap[ds] += (j.co2 || 0);
   });
 
   const myCarbon = dates.map(d => spendMap[d]);
