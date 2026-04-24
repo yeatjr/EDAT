@@ -186,7 +186,11 @@ EDAT is a **SaaS platform for highway operators**.
 
 ---
 
+## 📄 Get Started
+Using this link to access our product: https://edat-backend-480049975034.asia-southeast1.run.app
+For login, click the demo account to demonstrate the user. 
+
+
 ## 📄 License
 
 Built with ❤️ for Project 2030: MyAI Future Hackathon  
-Distributed under the MIT License
