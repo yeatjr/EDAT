@@ -185,6 +185,66 @@ EDAT is a **SaaS platform for highway operators**.
 | 🏢 B2B ESG Subscription | Corporate reporting |
 
 ---
+
+## How system integrate with highway companies: 
+### 🟢 Entry Phase (Vehicle Enters Toll)
+
+- The highway system automatically captures vehicle identity using:
+  - RFID readers
+  - ANPR (Automatic Number Plate Recognition) cameras  
+
+- **📥 Input Collected:**
+  - Vehicle ID:
+    - Hashed License Plate (for privacy)
+    - OR RFID Tag ID  
+  - Entry Metadata:
+    - Entry Point ID  
+    - Timestamp  
+    - Vehicle Class (retrieved from registration database)  
+
+- **⚙️ System Actions:**
+  - A **Trip Session** is created in the backend  
+  - The system begins collecting real-time environmental data  
+
+- **🌍 Live Data Monitoring:**
+  - 🌦 Weather conditions (e.g., rainfall intensity from MET Malaysia)  
+  - 🌫 Air quality (from DOE APIMS network)  
+  - 🌡 Ground temperature (for road stress analysis)  
+  - 🚗 Traffic occupancy (from highway sensors)  
+
+---
+
+### 🔴 Exit Phase (Vehicle Leaves Toll)
+
+- The system retrieves the **Trip Session** using:
+  - Vehicle identification  
+  - Exit point data  
+
+- **💰 Toll Calculation Process:**
+  - Calculate base toll:
+    - Based on distance travelled  
+
+- **🤖 Multi-Agent Processing:**
+  - Send data to **Multi-Agent Engine**  
+  - Incorporate real-time factors:
+    - Traffic conditions  
+    - Weather  
+    - Environmental data  
+
+- **⚡ Final Output (Within Milliseconds):**
+  - Generate final toll price  
+  - Provide clear justification for the charge  
+
+---
+
+### 🎯 Key Benefits
+
+- 🔍 Transparency in pricing  
+- ⚡ Fast and efficient processing  
+- 🌱 Environment-aware toll calculation  
+- 🚗 Smarter traffic and congestion management  
+```
+
 # 🚀 Getting Started
 
 Experience the live system or set up your own local instance of the **EDAT platform**.
