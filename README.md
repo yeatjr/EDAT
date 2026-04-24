@@ -244,6 +244,7 @@ EDAT is a **SaaS platform for highway operators**.
 - 🌱 Environment-aware toll calculation  
 - 🚗 Smarter traffic and congestion management
 
+---
 
 ## 🚀 Getting Started
 
