@@ -185,10 +185,38 @@ EDAT is a **SaaS platform for highway operators**.
 | 🏢 B2B ESG Subscription | Corporate reporting |
 
 ---
+# 🚀 Getting Started
 
-## 📄 Get Started
-Using this link to access our product: https://edat-backend-480049975034.asia-southeast1.run.app  <br>
-For login, click the demo account to demonstrate the user. 
+Experience the live system or set up your own local instance of the **EDAT platform**.
+
+---
+
+## 🔗 Live Deployment
+
+The production environment is currently deployed on Google Cloud Run:
+
+**Live Demo:**  
+👉 https://edat-backend-480049975034.asia-southeast1.run.app
+
+---
+
+## 🛠️ Local Setup
+
+### 1. Prerequisites
+
+Make sure you have the following installed:
+
+- Node.js (v18 or higher)
+- Google Cloud Account (with Vertex AI and Datastore enabled)
+- Firebase Account (for Authentication)
+
+---
+
+### 2. Clone the Repository
+
+
+git clone https://github.com/your-username/EDAT.git
+cd EDAT
 
 
 ## 📄 License
