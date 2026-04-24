@@ -229,6 +229,37 @@ EDAT produces three things that Malaysian transport governance currently lacks e
 
 ---
 
+🌍 Sustainable Development Goals (SDG Alignment)
+
+EDAT directly contributes to the United Nations Sustainable Development Goals (SDGs), with a primary focus on transforming urban mobility systems into intelligent, low-carbon infrastructure.
+
+🏙 Primary SDG: SDG 11 — Sustainable Cities and Communities
+
+EDAT addresses one of the core challenges of SDG 11: urban transport inefficiency and congestion.
+
+🚗 Reduces peak-hour congestion through dynamic pricing
+🚦 Improves traffic flow across high-density corridors
+💡 Encourages smarter travel behaviour via real-time incentives
+
+Target 11.2 Contribution:
+
+Providing access to safe, efficient, and sustainable transport systems through AI-driven optimisation.
+
+🌱 Secondary SDG: SDG 13 — Climate Action
+
+EDAT actively reduces transport-related emissions by influencing when and how people travel.
+
+📉 Lower emissions through reduced congestion
+⚡ Incentivises EV and hybrid vehicle usage
+🌧 Weather-aware pricing reduces high-risk, high-emission trips
+🏗 Supporting SDG: SDG 9 — Industry, Innovation and Infrastructure
+
+EDAT modernises legacy toll infrastructure into an intelligent, data-driven system.
+
+🤖 AI-powered decision-making integrated into national infrastructure
+🔄 Enhances existing systems without requiring new hardware
+📊 Enables data-driven policy and infrastructure planning
+
 ## 💼💰 Business Model
 
 **EDAT is sold to highway concession companies 🛣 — PLUS Expressways, Litrak, SPRINT, EDL, and the operators of the Johor causeway links — as a Software-as-a-Service (SaaS) platform licensed on top of their existing toll infrastructure.**
