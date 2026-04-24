@@ -242,10 +242,10 @@ EDAT is a **SaaS platform for highway operators**.
 - 🔍 Transparency in pricing  
 - ⚡ Fast and efficient processing  
 - 🌱 Environment-aware toll calculation  
-- 🚗 Smarter traffic and congestion management  
-```
+- 🚗 Smarter traffic and congestion management
 
-# 🚀 Getting Started
+
+## 🚀 Getting Started
 
 Experience the live system or set up your own local instance of the **EDAT platform**.
 
