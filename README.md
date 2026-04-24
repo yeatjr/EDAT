@@ -215,7 +215,7 @@ Make sure you have the following installed:
 ### 2. Clone the Repository
 
 
-git clone https://github.com/your-username/EDAT.git
+git clone https://github.com/your-username/EDAT.git  <br>
 cd EDAT
 
 
